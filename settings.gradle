@@ -1,0 +1,2 @@
+include ':app', ':download', ':db', ':dbAnnotation', ':downloadAnnotation'
+rootProject.name='DownloadLib'
