@@ -10,29 +10,46 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
     }
 
     companion object {
-        val configs = HashMap<String, RDownloadClient>()
-        val callbackMethods = HashMap<Class<out Any>, SimpleSubscribeInfo>()
+        private val configs = HashMap<String, RDownloadClient>()
+        private val callbackMethods = HashMap<Class<out Any>, SimpleSubscribeInfo>()
+        private val subscribeInfos = HashMap<String,  HashMap<Any, SimpleSubscribeInfo?>>()
+
 
         fun bind(configurationKey: String, obj: Any): RDownloadClient? {
-            val client = configs[configurationKey]
-            update(client)
-            return client
+            return update(configurationKey, obj)
         }
 
         fun bind(obj: Any): RDownloadClient? {
-            val client = configs[""]
-            update(client)
-            return client
+            return update("", obj)
         }
 
-        private fun update(client: RDownloadClient?) {
+        private fun update(configurationKey: String, obj: Any) : RDownloadClient?{
             //TODO 将当前的进度回调回去
+            val client = configs[configurationKey]
+            if(!subscribeInfos.containsKey(configurationKey)){
+                val map = HashMap<Any, SimpleSubscribeInfo?>()
+                subscribeInfos.put(configurationKey, map)
+            }
+            val map = subscribeInfos[configurationKey]
+            val simpleSubscribeInfo = map?.get(obj)
+            simpleSubscribeInfo?.also {
+                //TODO 把相关的进度回调回去
+            }
+            return client
         }
 
         fun addIndex(index : SubscribeInfoIndex?){
             index?.also {
                 callbackMethods.putAll(index.subscriberInfo)
             }
+        }
+
+        fun unBind(configurationKey: String, obj : Any){
+
+        }
+
+        fun unBind(obj : Any){
+            unBind("", obj)
         }
     }
 

@@ -100,7 +100,7 @@ public class DownloadProcessor extends AbstractProcessor {
 
                 messager.printMessage(Diagnostic.Kind.NOTE, "size =  " + sizeChanges.size());
 
-                //TODO 下面的每一个方法需要对里面的参数进行检测
+                //TODO 下面的每一个方法需要对里面的参数进行检测, 貌似有漏洞去获取方法的时候 而且要把父类的方法也要取出来 保存下来
                 parseSizeChange(sizeChanges);
                 parseProgressChange(progressChanges);
                 parseRequestDatas(requestDatas);
