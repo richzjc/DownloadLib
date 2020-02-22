@@ -1,5 +1,7 @@
 package com.richzjc.download.eventbus;
 
+import java.util.Map;
+
 public interface SubscribeInfoIndex {
-    SimpleSubscribeInfo getSubscriberInfo(Class cls);
+    Map<Class, SimpleSubscribeInfo> getSubscriberInfo();
 }

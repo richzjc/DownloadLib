@@ -162,18 +162,16 @@ public class DownloadProcessor extends AbstractProcessor {
             return;
         }
 
-        ParameterSpec parameterSpec = ParameterSpec.builder(ClassName.get(elementUtils.getTypeElement(Const.CLASS_PATH)), "cls")
-                .build();
+        TypeName typeName = ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(Class.class), ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)));
+
 
         MethodSpec methodSpec = MethodSpec.methodBuilder("getSubscriberInfo")
                 .addModifiers(Modifier.PUBLIC)
                 .addAnnotation(ClassName.get(elementUtils.getTypeElement(Const.OVERRIDE_ANNOTATION)))
-                .addParameter(parameterSpec)
-                .returns(ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)))
-                .addStatement("return SUBSCRIBER_INDEX.get(cls)")
+                .returns(typeName)
+                .addStatement("return SUBSCRIBER_INDEX")
                 .build();
 
-        TypeName typeName = ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(Class.class), ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)));
 
         FieldSpec fieldSpec = FieldSpec.builder(typeName, "SUBSCRIBER_INDEX", Modifier.PRIVATE, Modifier.FINAL, Modifier.STATIC)
                 .build();

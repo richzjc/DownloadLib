@@ -1,5 +1,8 @@
 package com.richzjc.download
 
+import com.richzjc.download.eventbus.SimpleSubscribeInfo
+import com.richzjc.download.eventbus.SubscribeInfoIndex
+
 class RDownloadClient private constructor(builder: Builder) : RDownload by RDownloadImpl(builder) {
 
     init {
@@ -8,6 +11,7 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
 
     companion object {
         val configs = HashMap<String, RDownloadClient>()
+        val callbackMethods = HashMap<Class<out Any>, SimpleSubscribeInfo>()
 
         fun bind(configurationKey: String, obj: Any): RDownloadClient? {
             val client = configs[configurationKey]
@@ -23,6 +27,12 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
 
         private fun update(client: RDownloadClient?) {
             //TODO 将当前的进度回调回去
+        }
+
+        fun addIndex(index : SubscribeInfoIndex?){
+            index?.also {
+                callbackMethods.putAll(index.subscriberInfo)
+            }
         }
     }
 
