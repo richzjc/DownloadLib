@@ -45,7 +45,10 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
         }
 
         fun unBind(configurationKey: String, obj : Any){
-
+            val map = subscribeInfos.get(configurationKey)
+            map?.also {
+                map.remove(obj)
+            }
         }
 
         fun unBind(obj : Any){
