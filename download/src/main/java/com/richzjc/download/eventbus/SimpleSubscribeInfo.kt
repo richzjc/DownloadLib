@@ -1,12 +1,10 @@
 package com.richzjc.download.eventbus
 
-import java.lang.reflect.Method
+class SimpleSubscribeInfo(val sizeChangeMethod : List<SubscribeMethod>?, val progressChangeMethod : List<SubscribeMethod>?, val requestDataMethod : List<SubscribeMethod>?) : SubscribeInfo {
 
-class SimpleSubscribeInfo(val sizeChangeMethod : List<Method>?, val progressChangeMethod : List<Method>?, val requestDataMethod : List<Method>?) : SubscribeInfo {
+    override fun sizeChangeMethod(): List<SubscribeMethod>? = sizeChangeMethod
 
-    override fun sizeChangeMethod(): List<Method>? = sizeChangeMethod
+    override fun requestDataMethod(): List<SubscribeMethod>? = requestDataMethod
 
-    override fun requestDataMethod(): List<Method>? = requestDataMethod
-
-    override fun progressChangeMethod(): List<Method>? = progressChangeMethod
+    override fun progressChangeMethod(): List<SubscribeMethod>? = progressChangeMethod
 }

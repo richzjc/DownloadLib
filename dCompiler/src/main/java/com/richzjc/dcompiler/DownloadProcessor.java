@@ -5,7 +5,10 @@ import com.richzjc.dcompiler.util.EmptyUtils;
 import com.richzjc.downloadannotation.ProgressChange;
 import com.richzjc.downloadannotation.RequestDataSucc;
 import com.richzjc.downloadannotation.SizeChange;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.TypeSpec;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -23,6 +26,7 @@ import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
 import javax.lang.model.element.ExecutableElement;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -154,8 +158,18 @@ public class DownloadProcessor extends AbstractProcessor {
         }
     }
 
+    private void generateFile() throws IOException {
+        if (EmptyUtils.isEmpty(packageName) || EmptyUtils.isEmpty(className)) {
+            messager.printMessage(Diagnostic.Kind.NOTE, "在gradle里面传的值是不对的，导致包名和类名没有获取得到");
+            return;
+        }
 
-    private void generateFile() {
+        TypeSpec typeSpec = TypeSpec.classBuilder(className)
+                .addModifiers(Modifier.PUBLIC)
+                .build();
 
+        JavaFile.builder(packageName,  typeSpec)
+                .build()
+                .writeTo(filer);
     }
 }
