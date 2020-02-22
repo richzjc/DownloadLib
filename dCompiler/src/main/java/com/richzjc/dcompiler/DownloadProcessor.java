@@ -42,18 +42,6 @@ import javax.tools.Diagnostic;
 @AutoService(Processor.class)
 public class DownloadProcessor extends AbstractProcessor {
 
-//    class MyEventIndex{
-//        private static final Map<Class<?>, SubscriberInfo> SUBSCRIBER_INDEX;
-//        static{
-//              su = new HashMap(Class)
-//     putIndex()
-//        }
-//
-//    putIndex
-    // getsubscribeInfo
-//    }
-
-
     private Elements elementUtils;
     private Messager messager;
     private Filer filer;
@@ -78,7 +66,7 @@ public class DownloadProcessor extends AbstractProcessor {
 
     private void parsePackage(ProcessingEnvironment processingEnv) {
         String name = processingEnv.getOptions().get("eventBusIndex");
-        messager.printMessage(Diagnostic.Kind.NOTE, "在gradle里面传的值是： " + name);
+        messager.printMessage(Diagnostic.Kind.NOTE, "name =  " + name);
         if (!EmptyUtils.isEmpty(name)) {
             int index = name.lastIndexOf(".");
             if (index > 0) {
@@ -110,6 +98,9 @@ public class DownloadProcessor extends AbstractProcessor {
                 Set<? extends Element> progressChanges = roundEnv.getElementsAnnotatedWith(ProgressChange.class);
                 Set<? extends Element> requestDatas = roundEnv.getElementsAnnotatedWith(RequestDataSucc.class);
 
+                messager.printMessage(Diagnostic.Kind.NOTE, "size =  " + sizeChanges.size());
+
+                //TODO 下面的每一个方法需要对里面的参数进行检测
                 parseSizeChange(sizeChanges);
                 parseProgressChange(progressChanges);
                 parseRequestDatas(requestDatas);
@@ -187,21 +178,80 @@ public class DownloadProcessor extends AbstractProcessor {
         FieldSpec fieldSpec = FieldSpec.builder(typeName, "SUBSCRIBER_INDEX", Modifier.PRIVATE, Modifier.FINAL, Modifier.STATIC)
                 .build();
 
-        CodeBlock codeBlock = CodeBlock.builder()
-                .addStatement("SUBSCRIBER_INDEX = new $T<$T, $T>()", ClassName.get(HashMap.class), ClassName.get(Class.class), ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)))
-                .build();
+        CodeBlock.Builder builder = CodeBlock.builder()
+                .addStatement("SUBSCRIBER_INDEX = new $T<$T, $T>()", ClassName.get(HashMap.class), ClassName.get(Class.class), ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)));
+
+        addStatementToBuilder(builder);
 
         TypeSpec typeSpec = TypeSpec.classBuilder(className)
                 .addSuperinterface(ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_INFO_INDEX)))
                 .addModifiers(Modifier.PUBLIC)
                 .addMethod(methodSpec)
                 .addField(fieldSpec)
-                .addStaticBlock(codeBlock)
+                .addStaticBlock(builder.build())
                 .build();
 
 
         JavaFile.builder(packageName, typeSpec)
                 .build()
                 .writeTo(filer);
+    }
+
+    private void addStatementToBuilder(CodeBlock.Builder builder) {
+        builder.addStatement("$T<$T> sizeList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
+        builder.addStatement("$T<$T> progressList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
+        builder.addStatement("$T<$T> requestList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
+
+        for (Map.Entry<TypeElement, List<ExecutableElement>> entry : sizeMethods.entrySet()) {
+            List sizeMethods = entry.getValue();
+            List progressMethod = progressMethods.get(entry.getKey());
+            List reqeustMethod = requestDataMethods.get(entry.getKey());
+            progressMethods.remove(entry.getKey());
+            requestDataMethods.remove(entry.getKey());
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, builder, entry.getKey());
+        }
+
+        for (Map.Entry<TypeElement, List<ExecutableElement>> entry : progressMethods.entrySet()) {
+            List sizeMethods = null;
+            List progressMethod = entry.getValue();
+            List reqeustMethod = requestDataMethods.get(entry.getKey());
+            requestDataMethods.remove(entry.getKey());
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, builder, entry.getKey());
+        }
+
+
+        for (Map.Entry<TypeElement, List<ExecutableElement>> entry : requestDataMethods.entrySet()) {
+            List sizeMethods = null;
+            List progressMethod = null;
+            List reqeustMethod = entry.getValue();
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, builder, entry.getKey());
+        }
+    }
+
+    private void addToBuilder(List<ExecutableElement> sizeMethods, List<ExecutableElement> progressMethod, List<ExecutableElement> reqeustMethod, CodeBlock.Builder builder, TypeElement key) {
+        builder.addStatement("sizeList = new $T()", ClassName.get(ArrayList.class));
+        builder.addStatement("progressList = new $T()", ClassName.get(ArrayList.class));
+        builder.addStatement("requestList = new $T()", ClassName.get(ArrayList.class));
+
+        if (sizeMethods != null) {
+            for (ExecutableElement element : sizeMethods) {
+                builder.addStatement("sizeList.add(new $T($S, $T.class))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString(), ClassName.get(Integer.class));
+            }
+        }
+
+        if (progressMethod != null) {
+            for (ExecutableElement element : progressMethod) {
+                builder.addStatement("progressList.add(new $T($S, $T.class))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString(), ClassName.get(Integer.class));
+            }
+        }
+
+        if (reqeustMethod != null) {
+            for (ExecutableElement element : reqeustMethod) {
+                builder.addStatement("requestList.add(new $T($S, $T.class))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString(), ClassName.get(Integer.class));
+            }
+        }
+
+        builder.addStatement("SUBSCRIBER_INDEX.put($T.class, new $T(sizeList, progressList, requestList))", ClassName.get(key), ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)));
+
     }
 }

@@ -1,6 +1,3 @@
 package com.richzjc.download.eventbus
 
-class SubscribeMethod {
-    var methodName : String? = ""
-    var cls : Class<Any>? = null
-}
+class SubscribeMethod(val methodName : String?, val cls : Class<out Any>?)
