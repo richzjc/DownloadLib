@@ -1,15 +1,22 @@
 package com.richzjc.dcompiler;
 
 import com.google.auto.service.AutoService;
+import com.richzjc.dcompiler.util.Const;
 import com.richzjc.dcompiler.util.EmptyUtils;
 import com.richzjc.downloadannotation.ProgressChange;
 import com.richzjc.downloadannotation.RequestDataSucc;
 import com.richzjc.downloadannotation.SizeChange;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.CodeBlock;
+import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.ParameterSpec;
+import com.squareup.javapoet.ParameterizedTypeName;
+import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
 
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
@@ -164,11 +171,36 @@ public class DownloadProcessor extends AbstractProcessor {
             return;
         }
 
-        TypeSpec typeSpec = TypeSpec.classBuilder(className)
-                .addModifiers(Modifier.PUBLIC)
+        ParameterSpec parameterSpec = ParameterSpec.builder(ClassName.get(elementUtils.getTypeElement(Const.CLASS_PATH)), "cls")
                 .build();
 
-        JavaFile.builder(packageName,  typeSpec)
+        MethodSpec methodSpec = MethodSpec.methodBuilder("getSubscriberInfo")
+                .addModifiers(Modifier.PUBLIC)
+                .addAnnotation(ClassName.get(elementUtils.getTypeElement(Const.OVERRIDE_ANNOTATION)))
+                .addParameter(parameterSpec)
+                .returns(ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)))
+                .addStatement("return SUBSCRIBER_INDEX.get(cls)")
+                .build();
+
+        TypeName typeName = ParameterizedTypeName.get(ClassName.get(Map.class), ClassName.get(Class.class), ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)));
+
+        FieldSpec fieldSpec = FieldSpec.builder(typeName, "SUBSCRIBER_INDEX", Modifier.PRIVATE, Modifier.FINAL, Modifier.STATIC)
+                .build();
+
+        CodeBlock codeBlock = CodeBlock.builder()
+                .addStatement("SUBSCRIBER_INDEX = new $T<$T, $T>()", ClassName.get(HashMap.class), ClassName.get(Class.class), ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)))
+                .build();
+
+        TypeSpec typeSpec = TypeSpec.classBuilder(className)
+                .addSuperinterface(ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_INFO_INDEX)))
+                .addModifiers(Modifier.PUBLIC)
+                .addMethod(methodSpec)
+                .addField(fieldSpec)
+                .addStaticBlock(codeBlock)
+                .build();
+
+
+        JavaFile.builder(packageName, typeSpec)
                 .build()
                 .writeTo(filer);
     }
