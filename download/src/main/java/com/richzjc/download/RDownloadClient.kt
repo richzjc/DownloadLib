@@ -1,7 +1,5 @@
 package com.richzjc.download
 
-private val configs = HashMap<String, RDownloadClient>()
-
 class RDownloadClient private constructor(builder: Builder) : RDownload by RDownloadImpl(builder) {
 
     init {
@@ -9,6 +7,8 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
     }
 
     companion object {
+        val configs = HashMap<String, RDownloadClient>()
+
         fun bind(configurationKey: String, obj: Any): RDownloadClient? {
             val client = configs[configurationKey]
             update(client)
@@ -22,7 +22,7 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
         }
 
         private fun update(client: RDownloadClient?) {
-
+            //TODO 将当前的进度回调回去
         }
     }
 

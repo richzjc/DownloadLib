@@ -22,6 +22,7 @@ import javax.annotation.processing.Processor;
 import javax.annotation.processing.RoundEnvironment;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
@@ -30,6 +31,18 @@ import javax.tools.Diagnostic;
 @AutoService(Processor.class)
 public class DownloadProcessor extends AbstractProcessor {
 
+//    class MyEventIndex{
+//        private static final Map<Class<?>, SubscriberInfo> SUBSCRIBER_INDEX;
+//        static{
+//              su = new HashMap(Class)
+//     putIndex()
+//        }
+//
+//    putIndex
+    // getsubscribeInfo
+//    }
+
+
     private Elements elementUtils;
     private Messager messager;
     private Filer filer;
@@ -37,9 +50,9 @@ public class DownloadProcessor extends AbstractProcessor {
     private String packageName;
     private String className;
 
-    private Map<TypeElement, List<Method>> sizeMethods = new HashMap<>();
-    private Map<TypeElement, List<Method>> progressMethods = new HashMap<>();
-    private Map<TypeElement, List<Method>> requestDataMethods = new HashMap<>();
+    private Map<TypeElement, List<ExecutableElement>> sizeMethods = new HashMap<>();
+    private Map<TypeElement, List<ExecutableElement>> progressMethods = new HashMap<>();
+    private Map<TypeElement, List<ExecutableElement>> requestDataMethods = new HashMap<>();
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -99,18 +112,32 @@ public class DownloadProcessor extends AbstractProcessor {
         return false;
     }
 
-    private void generateFile() {
-
-    }
-
     private void parseRequestDatas(Set<? extends Element> requestDatas) {
-
-
+        if (requestDatas != null && !requestDatas.isEmpty()) {
+            for (Element element : requestDatas) {
+                TypeElement typeElement = (TypeElement) element.getEnclosingElement();
+                if (!requestDataMethods.containsKey(typeElement)) {
+                    List<ExecutableElement> method = new ArrayList<>();
+                    requestDataMethods.put(typeElement, method);
+                }
+                List<ExecutableElement> methods = requestDataMethods.get(typeElement);
+                methods.add((ExecutableElement) element);
+            }
+        }
     }
 
     private void parseProgressChange(Set<? extends Element> progressChanges) {
-
-
+        if (progressChanges != null && !progressChanges.isEmpty()) {
+            for (Element element : progressChanges) {
+                TypeElement typeElement = (TypeElement) element.getEnclosingElement();
+                if (!progressMethods.containsKey(typeElement)) {
+                    List<ExecutableElement> method = new ArrayList<>();
+                    progressMethods.put(typeElement, method);
+                }
+                List<ExecutableElement> methods = progressMethods.get(typeElement);
+                methods.add((ExecutableElement) element);
+            }
+        }
     }
 
     private void parseSizeChange(Set<? extends Element> sizeChanges) {
@@ -118,12 +145,17 @@ public class DownloadProcessor extends AbstractProcessor {
             for (Element element : sizeChanges) {
                 TypeElement typeElement = (TypeElement) element.getEnclosingElement();
                 if (!sizeMethods.containsKey(typeElement)) {
-                    List<Method> method = new ArrayList<>();
+                    List<ExecutableElement> method = new ArrayList<>();
                     sizeMethods.put(typeElement, method);
                 }
-                List<Method> methods = sizeMethods.get(typeElement);
-                Method
+                List<ExecutableElement> methods = sizeMethods.get(typeElement);
+                methods.add((ExecutableElement) element);
             }
         }
+    }
+
+
+    private void generateFile() {
+
     }
 }
