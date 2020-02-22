@@ -57,6 +57,12 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
         var netWorkType: NetWorkType = NetWorkType.WIFI
         var configurationKey: String = ""
         var threadCount: Int = 1
+        var maxDownloadCount : Int = MAX_HOLD_DOWNLOAD_COUNT
+
+        fun setMaxDownloadCount(maxCount : Int) = apply {
+            require(!(maxCount == null || maxCount <= 0)) { "maxCount必须大于0， 意思是指最多只能添加多少个下载任务" }
+            this.maxDownloadCount = maxCount
+        }
 
         fun setConfigrationKey(configurationKey: String) =
             apply { this.configurationKey = configurationKey }
