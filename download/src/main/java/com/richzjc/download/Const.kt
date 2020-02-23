@@ -7,3 +7,4 @@ const val DOWNLOADING = 10
 const val DOWNLOAD_PAUSE = 20
 const val DOWNLOAD_FINISH = 30
 const val DOWNLOAD_ERROR = 40
+const val DOWNLOAD_DELETE = 50
