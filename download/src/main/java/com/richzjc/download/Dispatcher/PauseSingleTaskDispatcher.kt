@@ -5,7 +5,7 @@ import com.richzjc.download.task.IParentTask
 
 class PauseSingleTaskDispatcher(builder : RDownloadClient.Builder?) {
 
-    fun pauseSingleTask(task : IParentTask){
+    fun pauseSingleTask(task : IParentTask?){
 
     }
 }
