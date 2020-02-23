@@ -91,8 +91,9 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
-                .dispatcher(Dispatcher())
                 .build()
+
+            okHttpClient?.dispatcher?.maxRequests = threadCount
             return RDownloadClient(this)
         }
     }

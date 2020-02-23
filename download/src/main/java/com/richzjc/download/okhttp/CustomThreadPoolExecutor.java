@@ -26,11 +26,14 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
+        //TODO 判断是否有加载完Task, 讲算totalLength 修改状态为下载中
+
     }
 
 
     @Override
     protected void afterExecute(Runnable r, Throwable t) {
         super.afterExecute(r, t);
+        //TODO 保存数据， 更新状态
     }
 }
