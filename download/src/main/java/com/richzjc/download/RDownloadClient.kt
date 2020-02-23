@@ -2,9 +2,12 @@ package com.richzjc.download
 
 import com.richzjc.download.eventbus.SimpleSubscribeInfo
 import com.richzjc.download.eventbus.SubscribeInfoIndex
+import com.richzjc.download.okhttp.CustomThreadPoolExecutor
 import com.richzjc.download.task.ParentTask
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
+import okhttp3.internal.threadFactory
+import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.TimeUnit
 
 class RDownloadClient private constructor(builder: Builder) : RDownload by RDownloadImpl(builder) {
@@ -87,10 +90,16 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
         }
 
         fun build(): RDownloadClient {
+            val okHttpName =
+                OkHttpClient::class.java.name.removePrefix("okhttp3.").removeSuffix("Client")
+
             okHttpClient = OkHttpClient.Builder()
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
+                .dispatcher(Dispatcher(CustomThreadPoolExecutor(0, Int.MAX_VALUE, 60, TimeUnit.SECONDS,
+                    SynchronousQueue(), threadFactory("$okHttpName Dispatcher", false)
+                )))
                 .build()
 
             okHttpClient?.dispatcher?.maxRequests = threadCount

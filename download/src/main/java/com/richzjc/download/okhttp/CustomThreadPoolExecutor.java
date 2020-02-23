@@ -1,5 +1,7 @@
 package com.richzjc.download.okhttp;
 
+import com.richzjc.download.task.IParentTask;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
@@ -27,7 +29,9 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
         //TODO 判断是否有加载完Task, 讲算totalLength 修改状态为下载中
+        if(r instanceof IParentTask){
 
+        }
     }
 
 
