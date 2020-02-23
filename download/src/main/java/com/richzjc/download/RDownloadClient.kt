@@ -3,12 +3,15 @@ package com.richzjc.download
 import com.richzjc.download.eventbus.SimpleSubscribeInfo
 import com.richzjc.download.eventbus.SubscribeInfoIndex
 import com.richzjc.download.okhttp.CustomThreadPoolExecutor
+import com.richzjc.download.task.IParentTask
 import com.richzjc.download.task.ParentTask
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.internal.threadFactory
+import java.util.*
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.TimeUnit
+import kotlin.collections.HashMap
 
 class RDownloadClient private constructor(builder: Builder) : RDownload by RDownloadImpl(builder) {
 
@@ -73,6 +76,8 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
         var threadCount: Int = 1
         var maxDownloadCount : Int = MAX_HOLD_DOWNLOAD_COUNT
         var okHttpClient : OkHttpClient? = null
+        val running = LinkedList<IParentTask>()
+        val pauseAndError = LinkedList<IParentTask>()
 
         fun setMaxDownloadCount(maxCount : Int) = apply {
             require(!(maxCount == null || maxCount <= 0)) { "maxCount必须大于0， 意思是指最多只能添加多少个下载任务" }

@@ -1,5 +1,11 @@
 package com.richzjc.download.Dispatcher
 
-class StartAllDispater {
+import com.richzjc.download.RDownloadClient
+
+class StartAllDispater(builder : RDownloadClient.Builder?){
+
+    fun startAll(){
+
+    }
 
 }
