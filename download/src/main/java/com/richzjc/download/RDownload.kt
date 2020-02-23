@@ -11,9 +11,9 @@ interface RDownload {
     fun pauseAll()
 
 
-    fun getAllDownloadData()
+    fun getAllDownloadData() : List<IParentTask>
 
-    fun getAllDownloadSize()
+    fun getAllDownloadSize() : Int
 
 
 }

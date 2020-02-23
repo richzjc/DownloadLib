@@ -21,12 +21,10 @@ class RDownloadImpl(val client : RDownloadClient.Builder) : RDownload {
 
     override fun pauseAll() = pauseAllDispater?.pauseAll()
 
-    override fun getAllDownloadData() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    override fun getAllDownloadData() = ArrayList<IParentTask>().apply {
+        addAll(client.running)
+        addAll(client.pauseAndError)
     }
 
-    override fun getAllDownloadSize() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
-    }
-
+    override fun getAllDownloadSize() = client.running.size + client.pauseAndError.size
 }
