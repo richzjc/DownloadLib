@@ -2,11 +2,19 @@ package com.richzjc.download
 
 import com.richzjc.download.eventbus.SimpleSubscribeInfo
 import com.richzjc.download.eventbus.SubscribeInfoIndex
+import com.richzjc.download.task.ParentTask
+import okhttp3.Dispatcher
+import okhttp3.OkHttpClient
+import java.util.concurrent.TimeUnit
 
 class RDownloadClient private constructor(builder: Builder) : RDownload by RDownloadImpl(builder) {
 
     init {
         configs[builder.configurationKey] = this
+    }
+
+    fun newCall(parentTask : ParentTask?) = parentTask?.also {
+        //TODO 添加了任务
     }
 
     companion object {
@@ -61,7 +69,7 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
         var configurationKey: String = ""
         var threadCount: Int = 1
         var maxDownloadCount : Int = MAX_HOLD_DOWNLOAD_COUNT
-
+        var okHttpClient : OkHttpClient? = null
 
         fun setMaxDownloadCount(maxCount : Int) = apply {
             require(!(maxCount == null || maxCount <= 0)) { "maxCount必须大于0， 意思是指最多只能添加多少个下载任务" }
@@ -79,6 +87,12 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
         }
 
         fun build(): RDownloadClient {
+            okHttpClient = OkHttpClient.Builder()
+                .connectTimeout(10, TimeUnit.SECONDS)
+                .writeTimeout(10, TimeUnit.SECONDS)
+                .readTimeout(30, TimeUnit.SECONDS)
+                .dispatcher(Dispatcher())
+                .build()
             return RDownloadClient(this)
         }
     }
