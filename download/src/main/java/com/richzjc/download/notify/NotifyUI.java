@@ -16,4 +16,16 @@ public class NotifyUI {
     };
 
 
+    public void notifyProgress(){
+
+    }
+
+    public void notifySizeChange(){
+
+    }
+
+    public void notifyRequestData(){
+
+    }
+
 }
