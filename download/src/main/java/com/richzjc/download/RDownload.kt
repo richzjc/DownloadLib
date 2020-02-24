@@ -1,17 +1,17 @@
 package com.richzjc.download
 
-import com.richzjc.download.task.IParentTask
+import com.richzjc.download.task.ParentTask
 
 interface RDownload {
-    fun addTask(parentTask: IParentTask?)
-    fun pauseTask(parentTask: IParentTask?)
+    fun addTask(parentTask: ParentTask?)
+    fun pauseTask(parentTask: ParentTask?)
 
     fun startAll()
 
     fun pauseAll()
 
 
-    fun getAllDownloadData() : List<IParentTask>
+    fun getAllDownloadData() : List<ParentTask>
 
     fun getAllDownloadSize() : Int
 

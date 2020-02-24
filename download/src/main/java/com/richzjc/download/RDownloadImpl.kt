@@ -4,7 +4,7 @@ import com.richzjc.download.Dispatcher.AddSingleTaskDispatcher
 import com.richzjc.download.Dispatcher.PauseAllDispater
 import com.richzjc.download.Dispatcher.PauseSingleTaskDispatcher
 import com.richzjc.download.Dispatcher.StartAllDispater
-import com.richzjc.download.task.IParentTask
+import com.richzjc.download.task.ParentTask
 
 class RDownloadImpl(val client : RDownloadClient.Builder) : RDownload {
 
@@ -13,15 +13,15 @@ class RDownloadImpl(val client : RDownloadClient.Builder) : RDownload {
     private val startSingleDispatcher by lazy { AddSingleTaskDispatcher(client) }
     private val pauseSingleDispatcher by lazy { PauseSingleTaskDispatcher(client) }
 
-    override fun addTask(parentTask: IParentTask?) = startSingleDispatcher?.addTask(parentTask)
+    override fun addTask(parentTask: ParentTask?) = startSingleDispatcher?.addTask(parentTask)
 
-    override fun pauseTask(parentTask: IParentTask?)  = pauseSingleDispatcher?.pauseSingleTask(parentTask)
+    override fun pauseTask(parentTask: ParentTask?)  = pauseSingleDispatcher?.pauseSingleTask(parentTask)
 
     override fun startAll() = startAllDispater?.startAll()
 
     override fun pauseAll() = pauseAllDispater?.pauseAll()
 
-    override fun getAllDownloadData() = ArrayList<IParentTask>().apply {
+    override fun getAllDownloadData() = ArrayList<ParentTask>().apply {
         addAll(client.running)
         addAll(client.pauseAndError)
     }

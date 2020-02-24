@@ -3,7 +3,6 @@ package com.richzjc.download.okhttp
 import com.richzjc.download.DOWNLOADING
 import com.richzjc.download.RDownloadClient
 import com.richzjc.download.WAITING
-import com.richzjc.download.task.IParentTask
 import com.richzjc.download.task.ParentTask
 import java.util.concurrent.RejectedExecutionHandler
 import java.util.concurrent.ThreadPoolExecutor
