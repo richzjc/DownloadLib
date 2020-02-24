@@ -8,7 +8,7 @@ import androidx.annotation.NonNull;
 
 public class NotifyUI {
 
-    private Handler handler = new Handler(Looper.getMainLooper()){
+    private static Handler handler = new Handler(Looper.getMainLooper()){
         @Override
         public void handleMessage(@NonNull Message msg) {
             super.handleMessage(msg);
@@ -16,15 +16,19 @@ public class NotifyUI {
     };
 
 
-    public void notifyProgress(){
+    public static void notifyProgress(){
 
     }
 
-    public void notifySizeChange(){
+    public static void notifySizeChange(){
 
     }
 
-    public void notifyRequestData(){
+    public static void notifyRequestData(){
+
+    }
+
+    public static void notifyStatusChange(){
 
     }
 

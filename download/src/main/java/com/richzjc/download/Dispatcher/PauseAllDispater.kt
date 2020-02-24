@@ -2,15 +2,18 @@ package com.richzjc.download.Dispatcher
 
 import com.richzjc.download.DOWNLOAD_PAUSE
 import com.richzjc.download.RDownloadClient
-import com.richzjc.download.task.ParentTask
+import com.richzjc.download.notify.NotifyUI
 
-class PauseAllDispater(val builder : RDownloadClient.Builder?){
+class PauseAllDispater(val builder: RDownloadClient.Builder?) {
 
-    fun pauseAll(){
-        synchronized(builder!!.running){
-            builder?.running?.forEach {
-                (it as? ParentTask)?.status = DOWNLOAD_PAUSE
+    fun pauseAll() = builder?.also {
+        synchronized(builder.running) {
+            builder.running?.forEach {
+                it.status = DOWNLOAD_PAUSE
+                builder.pauseAndError.add(it)
+                NotifyUI.notifyStatusChange()
             }
+            builder.running.clear()
         }
     }
 }
