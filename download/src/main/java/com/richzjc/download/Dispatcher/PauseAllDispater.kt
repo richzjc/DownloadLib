@@ -7,7 +7,7 @@ import com.richzjc.download.notify.NotifyUI
 class PauseAllDispater(val builder: RDownloadClient.Builder?) {
 
     fun pauseAll() = builder?.also {
-        synchronized(builder.running) {
+        synchronized(builder) {
             builder.running?.forEach {
                 it.status = DOWNLOAD_PAUSE
                 builder.pauseAndError.add(it)

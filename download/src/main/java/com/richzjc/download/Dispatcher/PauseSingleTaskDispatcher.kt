@@ -8,7 +8,7 @@ import com.richzjc.download.task.ParentTask
 class PauseSingleTaskDispatcher(val builder : RDownloadClient.Builder?) {
 
     fun pauseSingleTask(task : ParentTask?) = builder?.also {
-        synchronized(builder.running){
+        synchronized(builder){
             task?.status = DOWNLOAD_PAUSE
             task?.also { builder.pauseAndError.add(it) }
             NotifyUI.notifyStatusChange()

@@ -8,7 +8,6 @@ import com.richzjc.download.task.ParentTask
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.internal.threadFactory
-import java.util.*
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
@@ -18,10 +17,6 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
 
     init {
         configs[builder.configurationKey] = this
-    }
-
-    fun newCall(parentTask : ParentTask?) = parentTask?.also {
-        //TODO 添加了任务
     }
 
     companion object {

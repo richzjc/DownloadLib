@@ -7,7 +7,7 @@ import com.richzjc.download.notify.NotifyUI
 class StartAllDispater(val builder : RDownloadClient.Builder?){
 
     fun startAll() =  builder?.also{
-        synchronized(it.pauseAndError){
+        synchronized(it){
             it.pauseAndError?.forEach {
                 it.status = WAITING
                 builder.running.add(it)
