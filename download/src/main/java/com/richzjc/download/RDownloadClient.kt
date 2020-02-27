@@ -22,7 +22,7 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
     companion object {
         private val configs = HashMap<String, RDownloadClient>()
         private val callbackMethods = HashMap<Class<out Any>, SimpleSubscribeInfo>()
-        private val subscribeInfos = HashMap<String,  HashMap<Any, SimpleSubscribeInfo?>>()
+        private val subscribeInfos = HashMap<String, HashMap<Any, SimpleSubscribeInfo?>>()
 
 
         fun bind(configurationKey: String, obj: Any): RDownloadClient? {
@@ -33,10 +33,10 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
             return update("", obj)
         }
 
-        private fun update(configurationKey: String, obj: Any) : RDownloadClient?{
+        private fun update(configurationKey: String, obj: Any): RDownloadClient? {
             //TODO 将当前的进度回调回去
             val client = configs[configurationKey]
-            if(!subscribeInfos.containsKey(configurationKey)){
+            if (!subscribeInfos.containsKey(configurationKey)) {
                 val map = HashMap<Any, SimpleSubscribeInfo?>()
                 subscribeInfos.put(configurationKey, map)
             }
@@ -48,34 +48,39 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
             return client
         }
 
-        fun addIndex(index : SubscribeInfoIndex?){
+        fun addIndex(index: SubscribeInfoIndex?) {
             index?.also {
                 callbackMethods.putAll(index.subscriberInfo)
             }
         }
 
-        fun unBind(configurationKey: String, obj : Any){
+        fun unBind(configurationKey: String, obj: Any) {
             val map = subscribeInfos.get(configurationKey)
             map?.also {
                 map.remove(obj)
             }
         }
 
-        fun unBind(obj : Any){
+        fun unBind(obj: Any) {
             unBind("", obj)
         }
     }
 
     class Builder {
         var netWorkType: NetWorkType = NetWorkType.WIFI
+            private set
         var configurationKey: String = ""
+            private set
         var threadCount: Int = 1
-        var maxDownloadCount : Int = MAX_HOLD_DOWNLOAD_COUNT
-        var okHttpClient : OkHttpClient? = null
+            private set
+        var maxDownloadCount: Int = MAX_HOLD_DOWNLOAD_COUNT
+            private set
+        var okHttpClient: OkHttpClient? = null
+            private set
         val running = LinkedHashSet<ParentTask>()
         val pauseAndError = LinkedHashSet<ParentTask>()
 
-        fun setMaxDownloadCount(maxCount : Int) = apply {
+        fun setMaxDownloadCount(maxCount: Int) = apply {
             require(!(maxCount == null || maxCount <= 0)) { "maxCount必须大于0， 意思是指最多只能添加多少个下载任务" }
             this.maxDownloadCount = maxCount
         }
@@ -98,11 +103,18 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
                 .connectTimeout(10, TimeUnit.SECONDS)
                 .writeTimeout(10, TimeUnit.SECONDS)
                 .readTimeout(30, TimeUnit.SECONDS)
-                .dispatcher(Dispatcher(CustomThreadPoolExecutor(0, threadCount, 60, TimeUnit.SECONDS,
-                    SynchronousQueue(), threadFactory("$okHttpName Dispatcher", false)
-                , CustomRejectHander(this))))
+                .dispatcher(
+                    Dispatcher(
+                        CustomThreadPoolExecutor(
+                            0, threadCount, 60, TimeUnit.SECONDS,
+                            SynchronousQueue(), threadFactory("$okHttpName Dispatcher", false)
+                            , CustomRejectHander(this)
+                        )
+                    )
+                )
                 .build()
-            (okHttpClient?.dispatcher?.executorService as? CustomThreadPoolExecutor)?.okHttpClient = okHttpClient
+            (okHttpClient?.dispatcher?.executorService as? CustomThreadPoolExecutor)?.okHttpClient =
+                okHttpClient
             okHttpClient?.dispatcher?.maxRequests = threadCount
             return RDownloadClient(this)
         }

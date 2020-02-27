@@ -6,5 +6,4 @@ interface IRequestParamter {
     fun getRequestUrl() : String?
     fun getRequestMethod() : Int?
     fun getRequestHeader() : Map<String, String>?
-    fun getRequestBody() : RequestBody?
 }
