@@ -102,7 +102,7 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
                     SynchronousQueue(), threadFactory("$okHttpName Dispatcher", false)
                 , CustomRejectHander(this))))
                 .build()
-
+            (okHttpClient?.dispatcher?.executorService as? CustomThreadPoolExecutor)?.okHttpClient = okHttpClient
             okHttpClient?.dispatcher?.maxRequests = threadCount
             return RDownloadClient(this)
         }

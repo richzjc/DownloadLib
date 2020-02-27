@@ -13,6 +13,7 @@ class CustomRejectHander(val builder : RDownloadClient.Builder?) : RejectedExecu
         (r as? ParentTask)?.also {
             if(it.status == WAITING || it.status == DOWNLOADING){
                 builder?.running?.add(it)
+                builder?.okHttpClient?.dispatcher?.executorService?.execute(it)
             }else{
                 builder?.pauseAndError?.add(it)
             }
