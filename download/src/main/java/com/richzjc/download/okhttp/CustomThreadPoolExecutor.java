@@ -1,6 +1,10 @@
 package com.richzjc.download.okhttp;
 
+import android.util.Log;
+
 import com.richzjc.download.task.ParentTask;
+import com.richzjc.download.util.RequestUtilKt;
+
 import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -58,7 +62,10 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         if(r.getChildTasks() != null && r.getChildTasks().size() > 0)
             return;
 
-
+        if(r instanceof IRequestParamter){
+            RequestUtilKt.request(okHttpClient, (IRequestParamter) r);
+            Log.i("thread", "pool:" + Thread.currentThread().getName());
+        }
     }
 
     private void checkHasTotalLength(ParentTask task){
