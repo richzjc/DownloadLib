@@ -1,64 +1,62 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                xmlns:app="http://schemas.android.com/apk/res-auto"
-                xmlns:tools="http://schemas.android.com/tools"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:background="#f8f8f8"
-                android:padding="15dp">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="#f8f8f8"
+    android:orientation="vertical"
+    android:padding="15dp">
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="50dp"
-        android:orientation="horizontal"
-        >
+        android:orientation="horizontal">
+
         <Button
             android:id="@+id/add"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:text="add"
             android:padding="0dp"
-            android:textSize="10sp"
-            />
+            android:text="add"
+            android:textSize="10sp" />
 
         <Button
             android:id="@+id/pause"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:text="pause"
             android:padding="0dp"
-            android:textSize="10sp"
-            />
+            android:text="pause"
+            android:textSize="10sp" />
 
         <Button
             android:id="@+id/pauseAll"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:text="pauseAll"
             android:padding="0dp"
-            android:textSize="10sp"
-            />
+            android:text="pauseAll"
+            android:textSize="10sp" />
+
         <Button
             android:id="@+id/startAll"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:text="startAll"
             android:padding="0dp"
-            android:textSize="10sp"
-            />
+            android:text="startAll"
+            android:textSize="10sp" />
+
         <Button
             android:id="@+id/delete"
             android:layout_width="50dp"
             android:layout_height="50dp"
-            android:text="delete"
             android:padding="0dp"
-            android:textSize="10sp"
-            />
+            android:text="delete"
+            android:textSize="10sp" />
     </LinearLayout>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/rv"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="wrap_content" />
 
-</RelativeLayout>
+</LinearLayout>
