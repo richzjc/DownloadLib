@@ -11,7 +11,6 @@ class PauseSingleTaskDispatcher(val builder : RDownloadClient.Builder?) {
         synchronized(builder){
             task?.status = DOWNLOAD_PAUSE
             task?.also { builder.pauseAndError.add(it) }
-            NotifyUI.notifyStatusChange()
             builder.running.remove(task)
         }
     }

@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.richzjc.download.task.ParentTask;
 import com.richzjc.rdownload.widget.ProgressWscnImageView;
 
 import java.util.ArrayList;
@@ -17,11 +18,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 
-public class RvAdapter extends RecyclerView.Adapter {
+public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
 
-    List<DownloadTask> list = new ArrayList<>();
+    List<T> list = new ArrayList<>();
 
-    public void setData(List<DownloadTask> datas) {
+    public void setData(List<T> datas) {
         if (datas != null) {
             list.clear();
             list.addAll(datas);
@@ -44,7 +45,7 @@ public class RvAdapter extends RecyclerView.Adapter {
         return list.size();
     }
 
-    static class MyHolder extends RecyclerView.ViewHolder {
+    class MyHolder extends RecyclerView.ViewHolder {
 
         @BindView(R.id.image)
         ProgressWscnImageView image;
@@ -62,8 +63,8 @@ public class RvAdapter extends RecyclerView.Adapter {
             ButterKnife.bind(this, itemView);
         }
 
-        public void doBindData(DownloadTask downloadTask) {
-
+        public void doBindData(T downloadTask) {
+            newsTitle.setText(((DownloadTask)downloadTask).title);
         }
     }
 }

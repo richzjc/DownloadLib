@@ -25,40 +25,20 @@ public class DonwloadDetailActivity extends AppCompatActivity {
         setContentView(R.layout.paid_recycler_item_downloading_article);
         ButterKnife.bind(this, this);
         downloadClient = RDownloadClient.Companion.bind(this);
-        downloadClient.addTask(new DownloadTask("3349971"));
-
         init();
     }
 
     private void init(){
+        int initId = 3349971;
+        for(int i = 0; i < 20; i++){
+            downloadClient.addTask(new DownloadTask(String.valueOf(i + initId)));
+        }
+
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
         RvAdapter adapter = new RvAdapter();
+        adapter.setData(downloadClient.getAllDownloadData());
         rv.setAdapter(adapter);
     }
-
-//    private void init() {
-//        Log.i("download", "init");
-//        if (parentTaskCallback != null) {
-//            if (parentTaskCallback.status == DownloadConstants.DOWNLOADING) {
-//                showState.setText(parentTaskCallback.progress + "%");
-//            } else if (parentTaskCallback.status == DownloadConstants.DOWNLOAD_FINISH) {
-//                showState.setText("下载完成");
-//            } else if (parentTaskCallback.status == DownloadConstants.WAITING) {
-//                showState.setText("等待缓存");
-//            } else if (parentTaskCallback.status == DownloadConstants.DOWNLOAD_PAUSE) {
-//                showState.setText("暂停下载");
-//            } else if (parentTaskCallback.status == DownloadConstants.DOWNLOAD_ERROR) {
-//                showState.setText("下载失败");
-//            }
-//        }
-//    }
-
-//    @ProgressSubscribe(configurationKey = "test")
-//    private void updateProgress(ParentTaskCallback taskCallback) {
-//        if (parentTaskCallback != null && TextUtils.equals(taskCallback.getParentTaskId(), parentTaskCallback.getParentTaskId())) {
-//            init();
-//        }
-//    }
 
     @Override
     protected void onDestroy() {
