@@ -20,6 +20,10 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
     public String title;
     private String content;
 
+    public DownloadTask(){
+
+    }
+
     public DownloadTask(String id){
         this.id = id;
     }
@@ -45,5 +49,11 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
     @Override
     public List<ChildTask> getChildTasks() {
         return null;
+    }
+
+    @Nullable
+    @Override
+    public String getResultJSONKey() {
+        return "data";
     }
 }

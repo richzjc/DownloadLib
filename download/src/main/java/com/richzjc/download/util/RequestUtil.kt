@@ -1,5 +1,6 @@
 package com.richzjc.download.util
 
+import android.text.TextUtils
 import android.util.Log
 import com.alibaba.fastjson.JSON
 import com.richzjc.download.okhttp.GET
@@ -29,8 +30,15 @@ fun request(okHttpClient: OkHttpClient?, params: IRequestParamter?) {
     Log.i("thread", "request: ${Thread.currentThread().name}")
     try {
         val response = call.execute()
-        val obj = JSON.parseObject(response.body?.string(), params.javaClass)
-        updateParamsAttr(params, obj)
+        val result = response.body?.string()
+        if(TextUtils.isEmpty(params.getResultJSONKey())) {
+            val obj = JSON.parseObject(result, params.javaClass)
+            updateParamsAttr(params, obj)
+        }else{
+            val jobj = org.json.JSONObject(result)
+            val obj = JSON.parseObject(jobj.optString(params.getResultJSONKey()), params.javaClass)
+            updateParamsAttr(params, obj)
+        }
     } catch (e: Exception) {
         e.printStackTrace()
     }
