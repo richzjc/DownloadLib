@@ -28,7 +28,6 @@ fun request(okHttpClient: OkHttpClient?, params : IRequestParamter?){
     val call = okHttpClient.newCall(builder.build())
     Log.i("thread", "request: ${Thread.currentThread().name}")
     val response = call.execute()
-    Log.i("result", response.body?.string())
     try {
         val obj = JSON.parseObject(response.body?.string(), params.javaClass)
         updateParamsAttr(params, obj)
@@ -39,5 +38,10 @@ fun request(okHttpClient: OkHttpClient?, params : IRequestParamter?){
 }
 
 fun updateParamsAttr(origin: IRequestParamter, current: IRequestParamter?) {
-
+    val list = FieldUtils.getFields(origin.javaClass)
+    list?.forEach {outer ->
+        outer.isAccessible = true
+        val any = outer.get(current)
+        any?.also { outer.set(origin, any) }
+    }
 }

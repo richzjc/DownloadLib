@@ -8,6 +8,7 @@ import com.richzjc.download.task.ParentTask
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.internal.threadFactory
+import java.util.*
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
@@ -77,8 +78,8 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
             private set
         var okHttpClient: OkHttpClient? = null
             private set
-        val running = LinkedHashSet<ParentTask>()
-        val pauseAndError = LinkedHashSet<ParentTask>()
+        val running = LinkedList<ParentTask>()
+        val pauseAndError = LinkedList<ParentTask>()
 
         fun setMaxDownloadCount(maxCount: Int) = apply {
             require(!(maxCount == null || maxCount <= 0)) { "maxCount必须大于0， 意思是指最多只能添加多少个下载任务" }
@@ -113,8 +114,7 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
                     )
                 )
                 .build()
-            (okHttpClient?.dispatcher?.executorService as? CustomThreadPoolExecutor)?.okHttpClient =
-                okHttpClient
+            (okHttpClient?.dispatcher?.executorService as? CustomThreadPoolExecutor)?.builder = this
             okHttpClient?.dispatcher?.maxRequests = threadCount
             return RDownloadClient(this)
         }

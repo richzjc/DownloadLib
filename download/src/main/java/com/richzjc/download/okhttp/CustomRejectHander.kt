@@ -7,15 +7,18 @@ import com.richzjc.download.task.ParentTask
 import java.util.concurrent.RejectedExecutionHandler
 import java.util.concurrent.ThreadPoolExecutor
 
-class CustomRejectHander(val builder : RDownloadClient.Builder?) : RejectedExecutionHandler {
+class CustomRejectHander(val builder: RDownloadClient.Builder?) : RejectedExecutionHandler {
 
     override fun rejectedExecution(r: Runnable, executor: ThreadPoolExecutor) {
         (r as? ParentTask)?.also {
-            if(it.status == WAITING || it.status == DOWNLOADING){
-                builder?.running?.add(it)
-                builder?.okHttpClient?.dispatcher?.executorService?.execute(it)
-            }else{
-                builder?.pauseAndError?.add(it)
+            synchronized(builder!!) {
+                builder?.running?.remove(it)
+                builder?.pauseAndError?.remove(it)
+                if (it.status == WAITING || it.status == DOWNLOADING) {
+                    builder?.running?.add(it)
+                } else {
+                    builder?.pauseAndError?.add(it)
+                }
             }
         }
     }
