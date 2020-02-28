@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <RelativeLayout
+        android:id="@+id/image_parent"
+        android:layout_width="60dp"
+        android:layout_height="60dp"
+        android:layout_alignParentRight="true"
+        >
+
+        <com.richzjc.rdownload.widget.ProgressWscnImageView
+            android:id="@+id/image"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            app:pi_mask_color="#1a1482f0"
+            app:pi_progress="0"/>
+
+        <TextView
+            android:id="@+id/showState"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#7f000000"
+            android:gravity="center"
+            android:textColor="#ffffff"
+            android:textSize="12sp"
+            />
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/news_title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@id/image_parent"
+        android:layout_marginRight="20dp"
+        android:layout_toLeftOf="@id/image_parent"
+        android:ellipsize="end"
+        android:maxLines="2"
+        android:textColor="#333333"
+        android:textSize="14sp"
+        android:textStyle="bold"
+        android:text="啦啦啦啦"/>
+
+    <TextView
+        android:id="@+id/news_time"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/image_parent"
+        android:layout_marginRight="20dp"
+        android:layout_toLeftOf="@id/image_parent"
+        android:textColor="#999999"
+        android:textSize="12sp"
+        android:text="2小时"/>
+
+
+</RelativeLayout>

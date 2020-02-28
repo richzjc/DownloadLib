@@ -20,6 +20,9 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
     public String title;
     private String content;
 
+    public DownloadTask(String id){
+        this.id = id;
+    }
 
     @Nullable
     @Override

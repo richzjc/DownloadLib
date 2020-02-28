@@ -1,5 +1,6 @@
 package com.richzjc.rdownload
 
+import android.content.Intent
 import android.os.Bundle
 import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
@@ -30,6 +31,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun clickTest(view : View){
-        RDownloadClient.bind(this)?.addTask(DownloadTask())
+        startActivity(Intent(this, DonwloadDetailActivity::class.java))
     }
 }

@@ -9,12 +9,12 @@ import com.richzjc.download.okhttp.POST
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-fun request(okHttpClient: OkHttpClient?, params : IRequestParamter?){
+fun request(okHttpClient: OkHttpClient?, params: IRequestParamter?) {
     okHttpClient ?: return
     params ?: return
 
     val builder = Request.Builder().url(params!!.getRequestUrl() ?: "")
-    when(params.getRequestMethod()){
+    when (params.getRequestMethod()) {
         GET -> builder.method("GET", null)
         POST -> builder.method("POST", null)
         HEAD -> builder.method("HEAD", null)
@@ -27,19 +27,18 @@ fun request(okHttpClient: OkHttpClient?, params : IRequestParamter?){
 
     val call = okHttpClient.newCall(builder.build())
     Log.i("thread", "request: ${Thread.currentThread().name}")
-    val response = call.execute()
     try {
+        val response = call.execute()
         val obj = JSON.parseObject(response.body?.string(), params.javaClass)
         updateParamsAttr(params, obj)
     } catch (e: Exception) {
         e.printStackTrace()
     }
-
 }
 
 fun updateParamsAttr(origin: IRequestParamter, current: IRequestParamter?) {
     val list = FieldUtils.getFields(origin.javaClass)
-    list?.forEach {outer ->
+    list?.forEach { outer ->
         outer.isAccessible = true
         val any = outer.get(current)
         any?.also { outer.set(origin, any) }

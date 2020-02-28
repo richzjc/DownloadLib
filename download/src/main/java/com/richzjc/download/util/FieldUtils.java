@@ -11,18 +11,16 @@ import java.util.Map;
 public class FieldUtils {
     private static Map<Class, List<Field>> fields = new HashMap<>();
 
-    public static void putFields(Class cls){
-        if(!fields.containsKey(cls)){
+    public static void putFields(Class cls) {
+        if (!fields.containsKey(cls)) {
             List<Field> fieldList = new ArrayList<>();
-            while (cls!= null && cls != Object.class){
-                fieldList.addAll(new ArrayList<>(Arrays.asList(cls.getDeclaredFields())));
-            }
+            fieldList.addAll(new ArrayList<>(Arrays.asList(cls.getDeclaredFields())));
             fields.put(cls, fieldList);
         }
     }
 
-    public static List<Field> getFields(Class cls){
-        if(!fields.containsKey(cls)){
+    public static List<Field> getFields(Class cls) {
+        if (!fields.containsKey(cls)) {
             putFields(cls);
         }
         return fields.get(cls);

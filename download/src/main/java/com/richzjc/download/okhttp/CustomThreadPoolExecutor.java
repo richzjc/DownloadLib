@@ -2,19 +2,17 @@ package com.richzjc.download.okhttp;
 
 import android.util.Log;
 
+import com.richzjc.download.ConstKt;
 import com.richzjc.download.RDownloadClient;
+import com.richzjc.download.notify.NotifyUI;
 import com.richzjc.download.task.ParentTask;
 import com.richzjc.download.util.RequestUtilKt;
-
 import org.jetbrains.annotations.NotNull;
-
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
-import okhttp3.OkHttpClient;
 
 public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
 
@@ -42,6 +40,8 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         super.beforeExecute(t, r);
         //TODO 判断是否有加载完Task, 讲算totalLength 修改状态为下载中
         if (r instanceof ParentTask) {
+            ((ParentTask) r).status = ConstKt.DOWNLOADING;
+            NotifyUI.notifyStatusChange();
             checkedCache();
             checkChildTaskIsEmpty((ParentTask) r);
             checkHasTotalLength((ParentTask) r);

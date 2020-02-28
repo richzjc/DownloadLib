@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="ProgressImageView">
+        <attr name="pi_progress" format="integer" />
+        <attr name="pi_mask_color" format="color" />
+    </declare-styleable>
+</resources>
