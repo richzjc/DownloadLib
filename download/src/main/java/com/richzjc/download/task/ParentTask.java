@@ -1,5 +1,6 @@
 package com.richzjc.download.task;
 
+import com.richzjc.download.ConstKt;
 import com.richzjc.download.notify.NotifyUI;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.okhttp.MainHandler;
@@ -60,6 +61,13 @@ public abstract class ParentTask implements IParentTask, Runnable {
     @Override
     public void run() {
         List<ChildTask> childTasks = getChildTasks();
-        //TODO 对每一个Task进行下载
+        if (status == ConstKt.WAITING || status == ConstKt.DOWNLOADING) {
+            if (childTasks != null) {
+                for (ChildTask childTask : childTasks) {
+                    if (!childTask.run())
+                        break;
+                }
+            }
+        }
     }
 }
