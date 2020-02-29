@@ -1,11 +1,7 @@
 package com.richzjc.download.okhttp;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-
-import androidx.annotation.NonNull;
 
 import com.richzjc.download.ConstKt;
 import com.richzjc.download.RDownloadClient;
@@ -13,50 +9,36 @@ import com.richzjc.download.notify.NotifyUI;
 import com.richzjc.download.task.ParentTask;
 import com.richzjc.download.util.RequestUtilKt;
 import com.richzjc.download.util.SaveDataUtilKt;
+
 import org.jetbrains.annotations.NotNull;
+
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import static com.richzjc.download.okhttp.MainHandler.HANDLE_NEXT_MSG;
+
 public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
 
     @NotNull
     public RDownloadClient.Builder builder;
-    private Handler handler;
-    private static int HANDLE_NEXT_MSG = 3;
 
     public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-        init();
     }
 
     public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
-        init();
     }
 
     public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, RejectedExecutionHandler handler) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
-        init();
     }
 
     public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
-        init();
-    }
-
-    private void init(){
-        handler = new Handler(Looper.getMainLooper()){
-            @Override
-            public void handleMessage(@NonNull Message msg) {
-                super.handleMessage(msg);
-                if (builder != null && builder.getRunning().size() > 0) {
-                    builder.getOkHttpClient().dispatcher().executorService().execute(builder.getRunning().get(0));
-                }
-            }
-        };
     }
 
     @Override
@@ -66,7 +48,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         if (r instanceof ParentTask) {
             Log.i("download", r.toString());
             ((ParentTask) r).status = ConstKt.DOWNLOADING;
-            NotifyUI.notifyStatusChange((ParentTask)r);
+            NotifyUI.notifyStatusChange(builder, (ParentTask)r);
             checkedCache();
             checkChildTaskIsEmpty((ParentTask) r);
             checkHasTotalLength((ParentTask) r);
@@ -94,9 +76,10 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
                 }
             }
 
-            if(handler != null){
-                handler.sendEmptyMessage(HANDLE_NEXT_MSG);
-            }
+            Message msg = new Message();
+            msg.obj = builder;
+            msg.what = HANDLE_NEXT_MSG;
+            builder.getHandler().sendMessage(msg);
         }
     }
 
@@ -112,7 +95,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
             boolean isSuccess = RequestUtilKt.request(builder.getOkHttpClient(), (IRequestParamter) r);
             Log.i("download", "result : " + r.toString());
             if(isSuccess)
-                NotifyUI.notifyRequestData(r);
+                NotifyUI.notifyRequestData(builder, r);
         }
     }
 

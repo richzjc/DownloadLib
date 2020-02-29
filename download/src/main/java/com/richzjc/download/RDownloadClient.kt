@@ -1,9 +1,11 @@
 package com.richzjc.download
 
+import android.os.Looper
 import com.richzjc.download.eventbus.SimpleSubscribeInfo
 import com.richzjc.download.eventbus.SubscribeInfoIndex
 import com.richzjc.download.okhttp.CustomRejectHander
 import com.richzjc.download.okhttp.CustomThreadPoolExecutor
+import com.richzjc.download.okhttp.MainHandler
 import com.richzjc.download.task.ParentTask
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -12,7 +14,6 @@ import java.util.*
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
-import kotlin.collections.LinkedHashSet
 
 class RDownloadClient private constructor(builder: Builder) : RDownload by RDownloadImpl(builder) {
 
@@ -78,6 +79,8 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
             private set
         var okHttpClient: OkHttpClient? = null
             private set
+        val handler = MainHandler(Looper.getMainLooper())
+
         val running = LinkedList<ParentTask>()
         val pauseAndError = LinkedList<ParentTask>()
 

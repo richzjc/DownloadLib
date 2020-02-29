@@ -12,7 +12,7 @@ class PauseAllDispater(val builder: RDownloadClient.Builder?) {
             builder.running?.forEach {
                 it.status = DOWNLOAD_PAUSE
                 builder.pauseAndError.add(it)
-                NotifyUI.notifyStatusChange(it)
+                NotifyUI.notifyStatusChange(builder, it)
             }
             builder.running.clear()
         }
