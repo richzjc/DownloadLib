@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.richzjc.download.notify.Observer;
 import com.richzjc.download.task.ParentTask;
 import com.richzjc.rdownload.widget.ProgressWscnImageView;
 
@@ -39,6 +40,12 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
     }
 
     @Override
+    public void onViewDetachedFromWindow(@NonNull RecyclerView.ViewHolder holder) {
+        super.onViewDetachedFromWindow(holder);
+
+    }
+
+    @Override
     public int getItemCount() {
         return list.size();
     }
@@ -50,6 +57,24 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
         RelativeLayout imageParent;
         TextView newsTitle;
         TextView newsTime;
+
+        Observer observer = new Observer() {
+            @Override
+            public void notifyRequestData() {
+
+            }
+
+            @Override
+            public void notifyProgress() {
+
+            }
+
+            @Override
+            public void notifyStatus() {
+
+            }
+        };
+
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
@@ -63,5 +88,6 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
         public void doBindData(T downloadTask) {
             newsTitle.setText(((DownloadTask)downloadTask).title);
         }
+
     }
 }

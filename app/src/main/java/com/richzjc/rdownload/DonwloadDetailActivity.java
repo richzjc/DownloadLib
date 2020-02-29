@@ -27,7 +27,7 @@ public class DonwloadDetailActivity extends AppCompatActivity {
 
     private void init(){
         int initId = 3349971;
-        for(int i = 0; i < 20; i++){
+        for(int i = 0; i < 10; i++){
             downloadClient.addTask(new DownloadTask(String.valueOf(i + initId)));
         }
 
