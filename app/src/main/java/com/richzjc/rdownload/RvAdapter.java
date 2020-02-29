@@ -42,7 +42,7 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
     @Override
     public void onViewDetachedFromWindow(@NonNull RecyclerView.ViewHolder holder) {
         super.onViewDetachedFromWindow(holder);
-
+        ((MyHolder)holder).downloadTask.removeObserver(((MyHolder) holder).observer);
     }
 
     @Override
@@ -61,7 +61,8 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
         Observer observer = new Observer() {
             @Override
             public void notifyRequestData() {
-
+                if(downloadTask != null)
+                    doBindData(downloadTask);
             }
 
             @Override
@@ -75,6 +76,7 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
             }
         };
 
+        T downloadTask;
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
@@ -86,6 +88,8 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
         }
 
         public void doBindData(T downloadTask) {
+            this.downloadTask = downloadTask;
+            downloadTask.registObserver(observer);
             newsTitle.setText(((DownloadTask)downloadTask).title);
         }
 

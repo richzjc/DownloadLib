@@ -10,9 +10,9 @@ import com.richzjc.download.okhttp.POST
 import okhttp3.OkHttpClient
 import okhttp3.Request
 
-fun request(okHttpClient: OkHttpClient?, params: IRequestParamter?) {
-    okHttpClient ?: return
-    params ?: return
+fun request(okHttpClient: OkHttpClient?, params: IRequestParamter?) : Boolean{
+    okHttpClient ?: return false;
+    params ?: return false;
 
     val builder = Request.Builder().url(params!!.getRequestUrl() ?: "")
     when (params.getRequestMethod()) {
@@ -39,8 +39,10 @@ fun request(okHttpClient: OkHttpClient?, params: IRequestParamter?) {
             val obj = JSON.parseObject(jobj.optString(params.getResultJSONKey()), params.javaClass)
             updateParamsAttr(params, obj)
         }
+        return true
     } catch (e: Exception) {
         e.printStackTrace()
+        return false
     }
 }
 
