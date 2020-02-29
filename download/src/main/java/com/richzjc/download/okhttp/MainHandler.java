@@ -7,6 +7,7 @@ import androidx.annotation.NonNull;
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.eventbus.SimpleSubscribeInfo;
 import com.richzjc.download.eventbus.SubscribeMethod;
+import com.richzjc.download.eventbus.WrapNotifyModel;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.task.ParentTask;
 import java.lang.reflect.Method;
@@ -53,7 +54,7 @@ public class MainHandler extends Handler {
                     break;
                 case NOTIFY_SINGLE_PAGE:
                     SimpleSubscribeInfo subscribeInfo = RDownloadClient.Companion.getCallbackMethods().get(msg.obj.getClass());
-                    handleNotifySinglePage(msg.obj, msg.arg1, subscribeInfo);
+                    handleNotifySinglePage((WrapNotifyModel) msg.obj, subscribeInfo);
                     break;
                 case NOTIFY_ALL_SIZECHANGE_PAGE:
                     handleNotifyAllSizeChange((String) msg.obj);
@@ -86,15 +87,16 @@ public class MainHandler extends Handler {
         }
     }
 
-    private void handleNotifySinglePage(Object obj, int allDownloadSize, SimpleSubscribeInfo subscribeInfo) {
-        if(subscribeInfo != null && obj != null){
+    private void handleNotifySinglePage(WrapNotifyModel wrapNotifyModel, SimpleSubscribeInfo subscribeInfo) {
+        if(subscribeInfo != null && wrapNotifyModel != null){
             List<SubscribeMethod> sizeMethod = subscribeInfo.getSizeChangeMethod();
+            int allDownloadSize = wrapNotifyModel.getClient().getAllDownloadSize();
             if(sizeMethod != null){
                 for(SubscribeMethod subscribeMethod : sizeMethod){
                     try {
-                        Method method = obj.getClass().getDeclaredMethod(subscribeMethod.getMethodName(), int.class);
+                        Method method = wrapNotifyModel.getObj().getClass().getDeclaredMethod(subscribeMethod.getMethodName(), int.class);
                         method.setAccessible(true);
-                        method.invoke(obj, allDownloadSize);
+                        method.invoke(wrapNotifyModel.getObj(), allDownloadSize);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }

@@ -1,12 +1,10 @@
 package com.richzjc.download
 
-import android.os.Looper
 import com.richzjc.download.eventbus.SimpleSubscribeInfo
 import com.richzjc.download.eventbus.SubscribeInfoIndex
 import com.richzjc.download.notify.NotifyUI
 import com.richzjc.download.okhttp.CustomRejectHander
 import com.richzjc.download.okhttp.CustomThreadPoolExecutor
-import com.richzjc.download.okhttp.MainHandler
 import com.richzjc.download.task.ParentTask
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
@@ -16,7 +14,7 @@ import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
-class RDownloadClient private constructor(builder: Builder) : RDownload by RDownloadImpl(builder) {
+class RDownloadClient private constructor(val builder: Builder) : RDownload by RDownloadImpl(builder) {
 
     init {
         configs[builder.configurationKey] = this

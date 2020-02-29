@@ -3,6 +3,7 @@ package com.richzjc.download.notify;
 import android.os.Message;
 
 import com.richzjc.download.RDownloadClient;
+import com.richzjc.download.eventbus.WrapNotifyModel;
 import com.richzjc.download.okhttp.MainHandler;
 import com.richzjc.download.task.ParentTask;
 
@@ -39,8 +40,7 @@ public class NotifyUI {
     public static void notifySigleChange(Object object, RDownloadClient client){
         Message msg = new Message();
         msg.what = NOTIFY_SINGLE_PAGE;
-        msg.obj = object;
-        msg.arg1 = client.getAllDownloadSize();
+        msg.obj = new WrapNotifyModel(object, client);
         MainHandler.getInstance().sendMessage(msg);
     }
 

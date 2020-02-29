@@ -7,10 +7,10 @@ import android.view.View
 import com.richzjc.download.RDownloadClient
 import com.richzjc.downloadannotation.PauseAll
 import com.richzjc.downloadannotation.SizeChange
+import com.richzjc.downloadannotation.StartAll
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-
 
 
     @SizeChange
@@ -20,6 +20,11 @@ class MainActivity : AppCompatActivity() {
 
     @PauseAll
     fun progressChange(){
+
+    }
+
+    @StartAll
+    fun startAll(){
 
     }
 
