@@ -36,4 +36,8 @@ public class NotifyUI {
         msg.obj = r;
         MainHandler.getInstance().sendMessage(msg);
     }
+
+    public static void notifySizeChange(){
+
+    }
 }

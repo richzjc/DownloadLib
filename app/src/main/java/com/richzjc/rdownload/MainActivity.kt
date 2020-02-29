@@ -2,16 +2,10 @@ package com.richzjc.rdownload
 
 import android.content.Intent
 import android.os.Bundle
-import com.google.android.material.snackbar.Snackbar
 import androidx.appcompat.app.AppCompatActivity
-import android.view.Menu
-import android.view.MenuItem
 import android.view.View
-import com.richzjc.download.RDownloadClient
-import com.richzjc.downloadannotation.ProgressChange
+import com.richzjc.downloadannotation.PauseAll
 import com.richzjc.downloadannotation.SizeChange
-
-import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
 
@@ -20,7 +14,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    @ProgressChange
+    @PauseAll
     fun progressChange(){
 
     }

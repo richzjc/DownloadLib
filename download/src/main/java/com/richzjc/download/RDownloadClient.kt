@@ -23,8 +23,8 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
 
     companion object {
         private val configs = HashMap<String, RDownloadClient>()
-        private val callbackMethods = HashMap<Class<out Any>, SimpleSubscribeInfo>()
-        private val subscribeInfos = HashMap<String, HashMap<Any, SimpleSubscribeInfo?>>()
+        val subscribeInfos = HashMap<String, HashMap<Any, SimpleSubscribeInfo?>>()
+        val callbackMethods = HashMap<Class<out Any>, SimpleSubscribeInfo>()
 
 
         fun bind(configurationKey: String, obj: Any): RDownloadClient? {
@@ -36,13 +36,15 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
         }
 
         private fun update(configurationKey: String, obj: Any): RDownloadClient? {
-            //TODO 将当前的进度回调回去
             val client = configs[configurationKey]
             if (!subscribeInfos.containsKey(configurationKey)) {
                 val map = HashMap<Any, SimpleSubscribeInfo?>()
                 subscribeInfos.put(configurationKey, map)
             }
             val map = subscribeInfos[configurationKey]
+            if(!map!!.containsKey(obj)){
+                map[obj] = callbackMethods.get(obj::class.java)
+            }
             val simpleSubscribeInfo = map?.get(obj)
             simpleSubscribeInfo?.also {
                 //TODO 把相关的进度回调回去

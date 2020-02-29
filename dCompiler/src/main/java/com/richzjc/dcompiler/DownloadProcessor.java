@@ -3,15 +3,14 @@ package com.richzjc.dcompiler;
 import com.google.auto.service.AutoService;
 import com.richzjc.dcompiler.util.Const;
 import com.richzjc.dcompiler.util.EmptyUtils;
-import com.richzjc.downloadannotation.ProgressChange;
-import com.richzjc.downloadannotation.RequestDataSucc;
+import com.richzjc.downloadannotation.PauseAll;
+import com.richzjc.downloadannotation.StartAll;
 import com.richzjc.downloadannotation.SizeChange;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
 import com.squareup.javapoet.JavaFile;
 import com.squareup.javapoet.MethodSpec;
-import com.squareup.javapoet.ParameterSpec;
 import com.squareup.javapoet.ParameterizedTypeName;
 import com.squareup.javapoet.TypeName;
 import com.squareup.javapoet.TypeSpec;
@@ -80,8 +79,8 @@ public class DownloadProcessor extends AbstractProcessor {
     public Set<String> getSupportedAnnotationTypes() {
         Set<String> set = new LinkedHashSet<>();
         set.add(SizeChange.class.getName());
-        set.add(ProgressChange.class.getName());
-        set.add(RequestDataSucc.class.getName());
+        set.add(PauseAll.class.getName());
+        set.add(StartAll.class.getName());
         return set;
     }
 
@@ -95,8 +94,8 @@ public class DownloadProcessor extends AbstractProcessor {
         if (!EmptyUtils.isEmpty(annotations)) {
             try {
                 Set<? extends Element> sizeChanges = roundEnv.getElementsAnnotatedWith(SizeChange.class);
-                Set<? extends Element> progressChanges = roundEnv.getElementsAnnotatedWith(ProgressChange.class);
-                Set<? extends Element> requestDatas = roundEnv.getElementsAnnotatedWith(RequestDataSucc.class);
+                Set<? extends Element> progressChanges = roundEnv.getElementsAnnotatedWith(PauseAll.class);
+                Set<? extends Element> requestDatas = roundEnv.getElementsAnnotatedWith(StartAll.class);
 
                 messager.printMessage(Diagnostic.Kind.NOTE, "size =  " + sizeChanges.size());
 

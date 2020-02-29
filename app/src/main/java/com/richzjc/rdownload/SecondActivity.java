@@ -5,8 +5,8 @@ import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.richzjc.downloadannotation.ProgressChange;
-import com.richzjc.downloadannotation.RequestDataSucc;
+import com.richzjc.downloadannotation.PauseAll;
+import com.richzjc.downloadannotation.StartAll;
 import com.richzjc.downloadannotation.SizeChange;
 
 public class SecondActivity extends AppCompatActivity {
@@ -21,13 +21,13 @@ public class SecondActivity extends AppCompatActivity {
 
     }
 
-    @ProgressChange
+    @PauseAll
     void progressChange(){
 
     }
 
 
-    @RequestDataSucc
+    @StartAll
     void requestdataSucc(){
 
     }
