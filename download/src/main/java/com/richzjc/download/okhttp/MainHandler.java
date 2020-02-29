@@ -9,7 +9,6 @@ import com.richzjc.download.eventbus.SimpleSubscribeInfo;
 import com.richzjc.download.eventbus.SubscribeMethod;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.task.ParentTask;
-
 import java.lang.reflect.Method;
 import java.util.List;
 
