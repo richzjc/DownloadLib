@@ -1,10 +1,10 @@
 package com.richzjc.download.eventbus
 
-class SimpleSubscribeInfo(val sizeChangeMethod : List<SubscribeMethod>?, val progressChangeMethod : List<SubscribeMethod>?, val requestDataMethod : List<SubscribeMethod>?) : SubscribeInfo {
+class SimpleSubscribeInfo(val sizeChangeMethod : List<SubscribeMethod>?, val pauseAllMethod : List<SubscribeMethod>?, val startAllMethod : List<SubscribeMethod>?) : SubscribeInfo {
 
     override fun sizeChangeMethod(): List<SubscribeMethod>? = sizeChangeMethod
 
-    override fun requestDataMethod(): List<SubscribeMethod>? = requestDataMethod
+    override fun startAllMethod(): List<SubscribeMethod>? = startAllMethod
 
-    override fun progressChangeMethod(): List<SubscribeMethod>? = progressChangeMethod
+    override fun pauseAllMethod(): List<SubscribeMethod>? = pauseAllMethod
 }

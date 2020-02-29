@@ -44,7 +44,6 @@ public class DownloadProcessor extends AbstractProcessor {
     private Elements elementUtils;
     private Messager messager;
     private Filer filer;
-    private Types typeUtils;
     private String packageName;
     private String className;
 
@@ -58,7 +57,6 @@ public class DownloadProcessor extends AbstractProcessor {
         elementUtils = processingEnv.getElementUtils();
         messager = processingEnv.getMessager();
         filer = processingEnv.getFiler();
-        typeUtils = processingEnv.getTypeUtils();
         parsePackage(processingEnv);
 
     }
