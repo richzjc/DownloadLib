@@ -15,8 +15,6 @@ import com.richzjc.rdownload.widget.ProgressWscnImageView;
 import java.util.ArrayList;
 import java.util.List;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
 
@@ -47,15 +45,10 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
 
     class MyHolder extends RecyclerView.ViewHolder {
 
-        @BindView(R.id.image)
         ProgressWscnImageView image;
-        @BindView(R.id.showState)
         TextView showState;
-        @BindView(R.id.image_parent)
         RelativeLayout imageParent;
-        @BindView(R.id.news_title)
         TextView newsTitle;
-        @BindView(R.id.news_time)
         TextView newsTime;
 
         public MyHolder(@NonNull View itemView) {

@@ -1,12 +1,18 @@
 package com.richzjc.download.okhttp;
 
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.util.Log;
+
+import androidx.annotation.NonNull;
 
 import com.richzjc.download.ConstKt;
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.notify.NotifyUI;
 import com.richzjc.download.task.ParentTask;
 import com.richzjc.download.util.RequestUtilKt;
+import com.richzjc.download.util.SaveDataUtilKt;
 import org.jetbrains.annotations.NotNull;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.RejectedExecutionHandler;
@@ -18,21 +24,39 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
 
     @NotNull
     public RDownloadClient.Builder builder;
+    private Handler handler;
+    private static int HANDLE_NEXT_MSG = 3;
 
     public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
+        init();
     }
 
     public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
+        init();
     }
 
     public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, RejectedExecutionHandler handler) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
+        init();
     }
 
     public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
+        init();
+    }
+
+    private void init(){
+        handler = new Handler(Looper.getMainLooper()){
+            @Override
+            public void handleMessage(@NonNull Message msg) {
+                super.handleMessage(msg);
+                if (builder != null && builder.getRunning().size() > 0) {
+                    builder.getOkHttpClient().dispatcher().executorService().execute(builder.getRunning().get(0));
+                }
+            }
+        };
     }
 
     @Override
@@ -49,15 +73,29 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     }
 
     @Override
-    protected void afterExecute(Runnable r, Throwable t) {
-        super.afterExecute(r, t);
-        if (r instanceof ParentTask) {
-            //TODO 保存数据 更新状态
+    protected void afterExecute(Runnable it, Throwable t) {
+        super.afterExecute(it, t);
+        synchronized (builder){
+            if (it instanceof ParentTask) {
+               if(((ParentTask) it).status == ConstKt.DOWNLOAD_DELETE){
+                    SaveDataUtilKt.deleteData((ParentTask) it);
+                    builder.getRunning().remove(it);
+                    builder.getPauseAndError().remove(it);
+                }else if(((ParentTask) it).progress >= 100){
+                    SaveDataUtilKt.saveData((ParentTask) it);
+                    ((ParentTask) it).status = ConstKt.DOWNLOAD_FINISH;
+                    builder.getRunning().remove(it);
+                    builder.getPauseAndError().remove(it);
+                } else {
+                    SaveDataUtilKt.saveData((ParentTask) it);
+                    builder.getRunning().remove(it);
+                    builder.getPauseAndError().add((ParentTask) it);
+                }
+            }
 
-        }
-
-        if (builder != null) {
-            builder.getOkHttpClient().dispatcher().executorService().execute(builder.getRunning().get(0));
+            if(handler != null){
+                handler.sendEmptyMessage(HANDLE_NEXT_MSG);
+            }
         }
     }
 
