@@ -3,6 +3,7 @@ package com.richzjc.download
 import android.os.Looper
 import com.richzjc.download.eventbus.SimpleSubscribeInfo
 import com.richzjc.download.eventbus.SubscribeInfoIndex
+import com.richzjc.download.notify.NotifyUI
 import com.richzjc.download.okhttp.CustomRejectHander
 import com.richzjc.download.okhttp.CustomThreadPoolExecutor
 import com.richzjc.download.okhttp.MainHandler
@@ -45,10 +46,7 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
             if(!map!!.containsKey(obj)){
                 map[obj] = callbackMethods.get(obj::class.java)
             }
-            val simpleSubscribeInfo = map?.get(obj)
-            simpleSubscribeInfo?.also {
-                //TODO 把相关的进度回调回去
-            }
+            NotifyUI.notifySigleChange(obj, configs[configurationKey])
             return client
         }
 

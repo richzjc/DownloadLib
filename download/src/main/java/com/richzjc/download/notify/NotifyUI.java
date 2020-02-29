@@ -1,16 +1,13 @@
 package com.richzjc.download.notify;
 
-import android.os.Handler;
-import android.os.Looper;
 import android.os.Message;
-import androidx.annotation.NonNull;
 
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.okhttp.MainHandler;
 import com.richzjc.download.task.ParentTask;
-
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_PROGRESS;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_REQUEST;
+import static com.richzjc.download.okhttp.MainHandler.NOTIFY_SINGLE_PAGE;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_STATUS;
 
 
@@ -37,7 +34,11 @@ public class NotifyUI {
         MainHandler.getInstance().sendMessage(msg);
     }
 
-    public static void notifySizeChange(){
-
+    public static void notifySigleChange(Object object, RDownloadClient client){
+        Message msg = new Message();
+        msg.what = NOTIFY_SINGLE_PAGE;
+        msg.obj = object;
+        msg.arg1 = client.getAllDownloadSize();
+        MainHandler.getInstance().sendMessage(msg);
     }
 }
