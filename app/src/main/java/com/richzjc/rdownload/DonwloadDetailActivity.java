@@ -9,12 +9,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.richzjc.download.RDownloadClient;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
 
 public class DonwloadDetailActivity extends AppCompatActivity {
 
-    @BindView(R.id.rv)
     RecyclerView rv;
 
     RDownloadClient downloadClient;
@@ -23,7 +20,7 @@ public class DonwloadDetailActivity extends AppCompatActivity {
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.paid_recycler_item_downloading_article);
-        ButterKnife.bind(this, this);
+        rv = findViewById(R.id.rv);
         downloadClient = RDownloadClient.Companion.bind(this);
         init();
     }

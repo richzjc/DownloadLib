@@ -60,7 +60,11 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
-            ButterKnife.bind(this, itemView);
+            image = itemView.findViewById(R.id.image);
+            showState = itemView.findViewById(R.id.showState);
+            imageParent = itemView.findViewById(R.id.image_parent);
+            newsTitle = itemView.findViewById(R.id.news_title);
+            newsTime = itemView.findViewById(R.id.news_time);
         }
 
         public void doBindData(T downloadTask) {
