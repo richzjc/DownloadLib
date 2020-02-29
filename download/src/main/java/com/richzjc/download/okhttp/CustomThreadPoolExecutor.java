@@ -25,18 +25,6 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     @NotNull
     public RDownloadClient.Builder builder;
 
-    public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue);
-    }
-
-    public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory);
-    }
-
-    public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, RejectedExecutionHandler handler) {
-        super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, handler);
-    }
-
     public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
     }
@@ -62,11 +50,13 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
                     SaveDataUtilKt.deleteData((ParentTask) it);
                     builder.getRunning().remove(it);
                     builder.getPauseAndError().remove(it);
+                    NotifyUI.notifyAllSizeChange(builder.getConfigurationKey());
                 } else if (((ParentTask) it).getProgress() >= 100) {
                     SaveDataUtilKt.saveData((ParentTask) it);
                     ((ParentTask) it).setStatus(ConstKt.DOWNLOAD_FINISH);
                     builder.getRunning().remove(it);
                     builder.getPauseAndError().remove(it);
+                    NotifyUI.notifyAllSizeChange(builder.getConfigurationKey());
                 } else {
                     if (((ParentTask) it).getStatus() != ConstKt.DOWNLOAD_PAUSE && ((ParentTask) it).getStatus() != ConstKt.DOWNLOAD_ERROR)
                         ((ParentTask) it).setStatus(ConstKt.DOWNLOAD_ERROR);

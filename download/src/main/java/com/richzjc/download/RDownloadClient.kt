@@ -27,6 +27,10 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
         val subscribeInfos = HashMap<String, HashMap<Any, SimpleSubscribeInfo?>>()
         val callbackMethods = HashMap<Class<out Any>, SimpleSubscribeInfo>()
 
+        fun getClient(configurationKey : String?) : RDownloadClient?{
+            configurationKey ?: return null
+            return configs[configurationKey]
+        }
 
         fun bind(configurationKey: String, obj: Any): RDownloadClient? {
             return update(configurationKey, obj)

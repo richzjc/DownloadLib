@@ -5,6 +5,8 @@ import android.os.Message;
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.okhttp.MainHandler;
 import com.richzjc.download.task.ParentTask;
+
+import static com.richzjc.download.okhttp.MainHandler.NOTIFY_ALL_SIZECHANGE_PAGE;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_PROGRESS;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_REQUEST;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_SINGLE_PAGE;
@@ -39,6 +41,13 @@ public class NotifyUI {
         msg.what = NOTIFY_SINGLE_PAGE;
         msg.obj = object;
         msg.arg1 = client.getAllDownloadSize();
+        MainHandler.getInstance().sendMessage(msg);
+    }
+
+    public static void notifyAllSizeChange(String configuration){
+        Message msg = new Message();
+        msg.what = NOTIFY_ALL_SIZECHANGE_PAGE;
+        msg.obj = configuration;
         MainHandler.getInstance().sendMessage(msg);
     }
 }
