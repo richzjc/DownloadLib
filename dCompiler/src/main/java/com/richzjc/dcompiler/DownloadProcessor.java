@@ -230,19 +230,19 @@ public class DownloadProcessor extends AbstractProcessor {
 
         if (sizeMethods != null) {
             for (ExecutableElement element : sizeMethods) {
-                builder.addStatement("sizeList.add(new $T($S, $T.class))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString(), ClassName.get(Integer.class));
+                builder.addStatement("sizeList.add(new $T($S, null))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString());
             }
         }
 
         if (progressMethod != null) {
             for (ExecutableElement element : progressMethod) {
-                builder.addStatement("progressList.add(new $T($S, $T.class))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString(), ClassName.get(Integer.class));
+                builder.addStatement("progressList.add(new $T($S, null))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString());
             }
         }
 
         if (reqeustMethod != null) {
             for (ExecutableElement element : reqeustMethod) {
-                builder.addStatement("requestList.add(new $T($S, $T.class))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString(), ClassName.get(Integer.class));
+                builder.addStatement("requestList.add(new $T($S, null))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString());
             }
         }
 

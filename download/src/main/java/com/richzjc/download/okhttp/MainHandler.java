@@ -65,7 +65,7 @@ public class MainHandler extends Handler {
             if(sizeMethod != null){
                 for(SubscribeMethod subscribeMethod : sizeMethod){
                     try {
-                        Method method = obj.getClass().getDeclaredMethod(subscribeMethod.getMethodName(), subscribeMethod.getCls());
+                        Method method = obj.getClass().getDeclaredMethod(subscribeMethod.getMethodName(), int.class);
                         method.setAccessible(true);
                         method.invoke(obj, allDownloadSize);
                     } catch (Exception e) {
