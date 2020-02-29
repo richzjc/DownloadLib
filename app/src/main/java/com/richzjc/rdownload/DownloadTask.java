@@ -1,5 +1,7 @@
 package com.richzjc.rdownload;
 
+import android.text.TextUtils;
+
 import androidx.annotation.NonNull;
 
 import com.richzjc.download.okhttp.IRequestParamter;
@@ -8,6 +10,7 @@ import com.richzjc.download.task.ParentTask;
 
 import org.jetbrains.annotations.Nullable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +53,11 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
 
     @Override
     public List<ChildTask> getChildTasks() {
-        return null;
+        List<ChildTask> childTasks = new ArrayList<>();
+        if(!TextUtils.isEmpty(image_uri)){
+            childTasks.add(new ChildTask(image_uri));
+        }
+        return childTasks;
     }
 
     @Nullable
