@@ -47,29 +47,29 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         //TODO 判断是否有加载完Task, 讲算totalLength 修改状态为下载中
         if (r instanceof ParentTask) {
             Log.i("download", r.toString());
-            ((ParentTask) r).status = ConstKt.DOWNLOADING;
-            NotifyUI.notifyStatusChange(builder, (ParentTask)r);
+            ((ParentTask) r).setStatus(ConstKt.DOWNLOADING);
             checkedCache();
             checkChildTaskIsEmpty((ParentTask) r);
-            checkHasTotalLength((ParentTask) r);
         }
     }
 
     @Override
     protected void afterExecute(Runnable it, Throwable t) {
         super.afterExecute(it, t);
-        synchronized (builder){
+        synchronized (builder) {
             if (it instanceof ParentTask) {
-               if(((ParentTask) it).status == ConstKt.DOWNLOAD_DELETE){
+                if (((ParentTask) it).getStatus() == ConstKt.DOWNLOAD_DELETE) {
                     SaveDataUtilKt.deleteData((ParentTask) it);
                     builder.getRunning().remove(it);
                     builder.getPauseAndError().remove(it);
-                }else if(((ParentTask) it).progress >= 100){
+                } else if (((ParentTask) it).getProgress() >= 100) {
                     SaveDataUtilKt.saveData((ParentTask) it);
-                    ((ParentTask) it).status = ConstKt.DOWNLOAD_FINISH;
+                    ((ParentTask) it).setStatus(ConstKt.DOWNLOAD_FINISH);
                     builder.getRunning().remove(it);
                     builder.getPauseAndError().remove(it);
                 } else {
+                    if (((ParentTask) it).getStatus() != ConstKt.DOWNLOAD_PAUSE && ((ParentTask) it).getStatus() != ConstKt.DOWNLOAD_ERROR)
+                        ((ParentTask) it).setStatus(ConstKt.DOWNLOAD_ERROR);
                     SaveDataUtilKt.saveData((ParentTask) it);
                     builder.getRunning().remove(it);
                     builder.getPauseAndError().add((ParentTask) it);
@@ -79,7 +79,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
             Message msg = new Message();
             msg.obj = builder;
             msg.what = HANDLE_NEXT_MSG;
-            builder.getHandler().sendMessage(msg);
+            MainHandler.getInstance().sendMessage(msg);
         }
     }
 
@@ -94,8 +94,12 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         if (r instanceof IRequestParamter) {
             boolean isSuccess = RequestUtilKt.request(builder.getOkHttpClient(), (IRequestParamter) r);
             Log.i("download", "result : " + r.toString());
-            if(isSuccess)
-                NotifyUI.notifyRequestData(builder, r);
+            if (isSuccess) {
+                NotifyUI.notifyRequestData(r);
+                checkHasTotalLength(r);
+            } else{
+                r.setStatus(ConstKt.DOWNLOAD_ERROR);
+            }
         }
     }
 

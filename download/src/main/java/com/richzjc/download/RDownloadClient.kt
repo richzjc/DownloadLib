@@ -79,7 +79,6 @@ class RDownloadClient private constructor(builder: Builder) : RDownload by RDown
             private set
         var okHttpClient: OkHttpClient? = null
             private set
-        val handler = MainHandler(Looper.getMainLooper())
 
         val running = LinkedList<ParentTask>()
         val pauseAndError = LinkedList<ParentTask>()

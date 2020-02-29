@@ -4,5 +4,5 @@ import java.util.List;
 
 public interface IParentTask {
 
-    public List<ChildTask> getChildTasks();
+    List<ChildTask> getChildTasks();
 }

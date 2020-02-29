@@ -6,18 +6,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import com.richzjc.download.ConstKt;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.task.ParentTask;
 import com.richzjc.rdownload.widget.ProgressWscnImageView;
-
 import java.util.ArrayList;
 import java.util.List;
-
 
 public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
 
@@ -102,15 +98,15 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
         private void setStatus(T downloadTask) {
             Log.i("download", "init");
             if (downloadTask != null) {
-                if (downloadTask.status == ConstKt.DOWNLOADING) {
-                    showState.setText(downloadTask.progress + "%");
-                } else if (downloadTask.status == ConstKt.DOWNLOAD_FINISH) {
+                if (downloadTask.getStatus() == ConstKt.DOWNLOADING) {
+                    showState.setText(downloadTask.getProgress() + "%");
+                } else if (downloadTask.getStatus() == ConstKt.DOWNLOAD_FINISH) {
                     showState.setText("下载完成");
-                } else if (downloadTask.status == ConstKt.WAITING) {
+                } else if (downloadTask.getStatus() == ConstKt.WAITING) {
                     showState.setText("等待缓存");
-                } else if (downloadTask.status == ConstKt.DOWNLOAD_PAUSE) {
+                } else if (downloadTask.getStatus() == ConstKt.DOWNLOAD_PAUSE) {
                     showState.setText("暂停下载");
-                } else if (downloadTask.status == ConstKt.DOWNLOAD_ERROR) {
+                } else if (downloadTask.getStatus() == ConstKt.DOWNLOAD_ERROR) {
                     showState.setText("下载失败");
                 }
             }

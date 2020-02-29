@@ -3,10 +3,8 @@ package com.richzjc.download.okhttp;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.task.ParentTask;
@@ -18,21 +16,18 @@ public class MainHandler extends Handler {
     public static final int NOTIFY_REQUEST = 3;
     public static final int HANDLE_NEXT_MSG = 4;
 
-    public MainHandler() {
+    static {
+        handler = new MainHandler(Looper.getMainLooper());
     }
 
-    public MainHandler(@Nullable Callback callback) {
-        super(callback);
+    private static MainHandler handler;
+    public static MainHandler getInstance(){
+        return handler;
     }
 
-    public MainHandler(@NonNull Looper looper) {
+    private MainHandler(@NonNull Looper looper) {
         super(looper);
     }
-
-    public MainHandler(@NonNull Looper looper, @Nullable Callback callback) {
-        super(looper, callback);
-    }
-
 
     @Override
     public void handleMessage(@NonNull Message msg) {
