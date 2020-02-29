@@ -1,2 +1,2 @@
-include ':app', ':download', ':db', ':dbAnnotation', ':downloadAnnotation', ':dCompiler', ':nextapp'
+include ':app', ':download', ':db', ':dbAnnotation', ':downloadAnnotation', ':dCompiler'
 rootProject.name='DownloadLib'

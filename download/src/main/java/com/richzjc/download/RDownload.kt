@@ -15,5 +15,8 @@ interface RDownload {
 
     fun getAllDownloadSize() : Int
 
+    fun getRunningData() : List<ParentTask>?
+
+    fun getPauseOrErrorData() : List<ParentTask>?
 
 }

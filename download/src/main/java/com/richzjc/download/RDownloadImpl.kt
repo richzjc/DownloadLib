@@ -35,4 +35,8 @@ class RDownloadImpl(val client: RDownloadClient.Builder) : RDownload {
     }
 
     override fun getAllDownloadSize() = client.running.size + client.pauseAndError.size
+
+    override fun getRunningData(): List<ParentTask>?  = client.running
+
+    override fun getPauseOrErrorData(): List<ParentTask>?  = client.pauseAndError
 }

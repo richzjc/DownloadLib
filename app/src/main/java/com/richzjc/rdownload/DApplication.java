@@ -14,7 +14,6 @@ public class DApplication extends Application {
         super.onCreate();
 
         RDownloadClient.Companion.addIndex(new MyEventBusIndex());
-        RDownloadClient.Companion.addIndex(new com.netease.eventbus.nextapp.MyEventBusIndex());
         new RDownloadClient.Builder().setMaxDownloadCount(100).setThreadCount(1).setNetworkType(NetWorkType.WIFI).build();
     }
 }

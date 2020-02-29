@@ -3,13 +3,16 @@ package com.richzjc.download.okhttp;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+
 import androidx.annotation.NonNull;
+
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.eventbus.SimpleSubscribeInfo;
 import com.richzjc.download.eventbus.SubscribeMethod;
 import com.richzjc.download.eventbus.WrapNotifyModel;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.task.ParentTask;
+
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +31,8 @@ public class MainHandler extends Handler {
     }
 
     private static MainHandler handler;
-    public static MainHandler getInstance(){
+
+    public static MainHandler getInstance() {
         return handler;
     }
 
@@ -50,11 +54,10 @@ public class MainHandler extends Handler {
                     handleRequest((ParentTask) msg.obj);
                     break;
                 case HANDLE_NEXT_MSG:
-                    handleNextMsg((RDownloadClient.Builder)msg.obj);
+                    handleNextMsg((RDownloadClient.Builder) msg.obj);
                     break;
                 case NOTIFY_SINGLE_PAGE:
-                    SimpleSubscribeInfo subscribeInfo = RDownloadClient.Companion.getCallbackMethods().get(msg.obj.getClass());
-                    handleNotifySinglePage((WrapNotifyModel) msg.obj, subscribeInfo);
+                    handleNotifySinglePage((WrapNotifyModel) msg.obj);
                     break;
                 case NOTIFY_ALL_SIZECHANGE_PAGE:
                     handleNotifyAllSizeChange((String) msg.obj);
@@ -65,16 +68,16 @@ public class MainHandler extends Handler {
         }
     }
 
-    private void handleNotifyAllSizeChange(String configurationKey){
+    private void handleNotifyAllSizeChange(String configurationKey) {
         Map<Object, SimpleSubscribeInfo> map = RDownloadClient.Companion.getSubscribeInfos().get(configurationKey);
         RDownloadClient client = RDownloadClient.Companion.getClient(configurationKey);
-        if(client == null)
+        if (client == null)
             return;
         int downloadSize = client.getAllDownloadSize();
-        for(Map.Entry<Object, SimpleSubscribeInfo> entry : map.entrySet()){
+        for (Map.Entry<Object, SimpleSubscribeInfo> entry : map.entrySet()) {
             List<SubscribeMethod> sizeMethod = entry.getValue().getSizeChangeMethod();
-            if(sizeMethod != null){
-                for(SubscribeMethod subscribeMethod : sizeMethod){
+            if (sizeMethod != null) {
+                for (SubscribeMethod subscribeMethod : sizeMethod) {
                     try {
                         Method method = entry.getKey().getClass().getDeclaredMethod(subscribeMethod.getMethodName(), int.class);
                         method.setAccessible(true);
@@ -87,16 +90,45 @@ public class MainHandler extends Handler {
         }
     }
 
-    private void handleNotifySinglePage(WrapNotifyModel wrapNotifyModel, SimpleSubscribeInfo subscribeInfo) {
-        if(subscribeInfo != null && wrapNotifyModel != null){
+    private void handleNotifySinglePage(WrapNotifyModel wrapNotifyModel) {
+        if (wrapNotifyModel != null) {
+            SimpleSubscribeInfo subscribeInfo = RDownloadClient.Companion.getCallbackMethods().get(wrapNotifyModel.getObj().getClass());
             List<SubscribeMethod> sizeMethod = subscribeInfo.getSizeChangeMethod();
             int allDownloadSize = wrapNotifyModel.getClient().getAllDownloadSize();
-            if(sizeMethod != null){
-                for(SubscribeMethod subscribeMethod : sizeMethod){
+            if (sizeMethod != null) {
+                for (SubscribeMethod subscribeMethod : sizeMethod) {
                     try {
                         Method method = wrapNotifyModel.getObj().getClass().getDeclaredMethod(subscribeMethod.getMethodName(), int.class);
                         method.setAccessible(true);
                         method.invoke(wrapNotifyModel.getObj(), allDownloadSize);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            List<SubscribeMethod> pauseAllMethods = subscribeInfo.getPauseAllMethod();
+            List<ParentTask> running = wrapNotifyModel.getClient().getRunningData();
+            List<ParentTask> pause = wrapNotifyModel.getClient().getPauseOrErrorData();
+            if ((running == null || running.isEmpty()) && (pause != null && !pause.isEmpty())) {
+                for (SubscribeMethod subscribeMethod : pauseAllMethods) {
+                    try {
+                        Method method = wrapNotifyModel.getObj().getClass().getDeclaredMethod(subscribeMethod.getMethodName());
+                        method.setAccessible(true);
+                        method.invoke(wrapNotifyModel.getObj());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+
+            if ((pause == null || pause.isEmpty())) {
+                List<SubscribeMethod> startAllMethod = subscribeInfo.getStartAllMethod();
+                for (SubscribeMethod subscribeMethod : startAllMethod) {
+                    try {
+                        Method method = wrapNotifyModel.getObj().getClass().getDeclaredMethod(subscribeMethod.getMethodName());
+                        method.setAccessible(true);
+                        method.invoke(wrapNotifyModel.getObj());
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -113,7 +145,7 @@ public class MainHandler extends Handler {
 
     private void handleProgress(ParentTask task) {
         if (task != null && task.getObservers() != null) {
-            for(Observer observer : task.getObservers()){
+            for (Observer observer : task.getObservers()) {
                 observer.notifyProgress();
             }
         }
@@ -121,7 +153,7 @@ public class MainHandler extends Handler {
 
     private void handleStatus(ParentTask task) {
         if (task != null && task.getObservers() != null) {
-            for(Observer observer : task.getObservers()){
+            for (Observer observer : task.getObservers()) {
                 observer.notifyStatus();
             }
         }
@@ -129,7 +161,7 @@ public class MainHandler extends Handler {
 
     private void handleRequest(ParentTask task) {
         if (task != null && task.getObservers() != null) {
-            for(Observer observer : task.getObservers()){
+            for (Observer observer : task.getObservers()) {
                 observer.notifyRequestData();
             }
         }

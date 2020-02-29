@@ -47,5 +47,4 @@ dependencies {
     implementation project(path: ':download')
     implementation project(path: ':db')
     implementation project(path: ':dbAnnotation')
-    implementation project(path: ':nextapp')
 }

@@ -14,7 +14,6 @@
             <option value="$PROJECT_DIR$/dbAnnotation" />
             <option value="$PROJECT_DIR$/download" />
             <option value="$PROJECT_DIR$/downloadAnnotation" />
-            <option value="$PROJECT_DIR$/nextapp" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

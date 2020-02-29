@@ -20,12 +20,12 @@ class MainActivity : AppCompatActivity() {
 
     @PauseAll
     fun progressChange(){
-
+        pauseOrStart?.text = "已经全部暂停了"
     }
 
     @StartAll
     fun startAll(){
-
+        pauseOrStart?.text = "已经全部在下载了"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
