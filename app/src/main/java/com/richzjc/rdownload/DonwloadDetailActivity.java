@@ -33,9 +33,9 @@ public class DonwloadDetailActivity extends AppCompatActivity {
     }
 
     private void init(){
-        int initId = 3349971;
+        int initId = 3586206;
         for(int i = 0; i < 10; i++){
-            downloadClient.addTask(new DownloadTask(String.valueOf(i + initId)));
+            downloadClient.addTask(new DownloadTask(String.valueOf(initId - i)));
         }
 
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));

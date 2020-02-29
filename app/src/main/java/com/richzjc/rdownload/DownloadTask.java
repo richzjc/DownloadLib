@@ -33,7 +33,7 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
     @Nullable
     @Override
     public String getRequestUrl() {
-        return "https://api-wscn-sit.xuangubao.cn/apiv1/content/articles/" + id + "?extract=1";
+        return "https://api-wscn.xuangubao.cn/apiv1/content/articles/" + id + "?extract=1";
     }
 
     @Nullable
