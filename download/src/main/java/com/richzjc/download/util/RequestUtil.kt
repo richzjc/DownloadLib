@@ -30,6 +30,9 @@ fun request(okHttpClient: OkHttpClient?, params: IRequestParamter?) : Boolean{
     Log.i("thread", "request: ${Thread.currentThread().name}")
     try {
         val response = call.execute()
+        if(response.code != 200)
+            return false
+
         val result = response.body?.string()
         if(TextUtils.isEmpty(params.getResultJSONKey())) {
             val obj = JSON.parseObject(result, params.javaClass)

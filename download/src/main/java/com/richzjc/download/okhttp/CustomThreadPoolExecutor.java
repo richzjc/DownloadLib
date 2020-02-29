@@ -64,6 +64,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         super.beforeExecute(t, r);
         //TODO 判断是否有加载完Task, 讲算totalLength 修改状态为下载中
         if (r instanceof ParentTask) {
+            Log.i("download", r.toString());
             ((ParentTask) r).status = ConstKt.DOWNLOADING;
             NotifyUI.notifyStatusChange((ParentTask)r);
             checkedCache();
@@ -109,7 +110,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
 
         if (r instanceof IRequestParamter) {
             boolean isSuccess = RequestUtilKt.request(builder.getOkHttpClient(), (IRequestParamter) r);
-            Log.i("thread", "pool:" + Thread.currentThread().getName());
+            Log.i("download", "result : " + r.toString());
             if(isSuccess)
                 NotifyUI.notifyRequestData(r);
         }

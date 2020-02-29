@@ -1,5 +1,7 @@
 package com.richzjc.rdownload;
 
+import androidx.annotation.NonNull;
+
 import com.richzjc.download.okhttp.IRequestParamter;
 import com.richzjc.download.task.ChildTask;
 import com.richzjc.download.task.ParentTask;
@@ -14,7 +16,7 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
     public int comment_count;
     public String content_short;
     public long display_time;
-    public String id = "3349972";
+    public String id;
     public String image_uri;
     public String source_name;
     public String title;
@@ -55,5 +57,11 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
     @Override
     public String getResultJSONKey() {
         return "data";
+    }
+
+    @NonNull
+    @Override
+    public String toString() {
+        return id + "; title = " + title;
     }
 }

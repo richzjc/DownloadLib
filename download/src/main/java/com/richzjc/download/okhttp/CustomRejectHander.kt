@@ -1,5 +1,6 @@
 package com.richzjc.download.okhttp
 
+import android.util.Log
 import com.richzjc.download.DOWNLOADING
 import com.richzjc.download.DOWNLOAD_DELETE
 import com.richzjc.download.RDownloadClient
@@ -24,6 +25,7 @@ class CustomRejectHander(val builder: RDownloadClient.Builder?) : RejectedExecut
                     builder?.running?.remove(it)
                     builder?.pauseAndError?.add(it)
                 }
+                Log.i("download", "reject : " + r.toString());
             }
         }
     }
