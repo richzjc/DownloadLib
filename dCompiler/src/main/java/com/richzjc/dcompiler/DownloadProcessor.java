@@ -4,6 +4,7 @@ import com.google.auto.service.AutoService;
 import com.richzjc.dcompiler.util.Const;
 import com.richzjc.dcompiler.util.EmptyUtils;
 import com.richzjc.downloadannotation.PauseAll;
+import com.richzjc.downloadannotation.PauseAndStart;
 import com.richzjc.downloadannotation.StartAll;
 import com.richzjc.downloadannotation.SizeChange;
 import com.squareup.javapoet.ClassName;
@@ -50,6 +51,7 @@ public class DownloadProcessor extends AbstractProcessor {
     private Map<TypeElement, List<ExecutableElement>> sizeMethods = new HashMap<>();
     private Map<TypeElement, List<ExecutableElement>> progressMethods = new HashMap<>();
     private Map<TypeElement, List<ExecutableElement>> requestDataMethods = new HashMap<>();
+    private Map<TypeElement, List<ExecutableElement>> pauseStartMethods = new HashMap<>();
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -79,6 +81,7 @@ public class DownloadProcessor extends AbstractProcessor {
         set.add(SizeChange.class.getName());
         set.add(PauseAll.class.getName());
         set.add(StartAll.class.getName());
+        set.add(PauseAndStart.class.getName());
         return set;
     }
 
@@ -94,6 +97,7 @@ public class DownloadProcessor extends AbstractProcessor {
                 Set<? extends Element> sizeChanges = roundEnv.getElementsAnnotatedWith(SizeChange.class);
                 Set<? extends Element> progressChanges = roundEnv.getElementsAnnotatedWith(PauseAll.class);
                 Set<? extends Element> requestDatas = roundEnv.getElementsAnnotatedWith(StartAll.class);
+                Set<? extends Element> pauseAndStart = roundEnv.getElementsAnnotatedWith(PauseAndStart.class);
 
                 messager.printMessage(Diagnostic.Kind.NOTE, "size =  " + sizeChanges.size());
 
@@ -101,6 +105,7 @@ public class DownloadProcessor extends AbstractProcessor {
                 parseSizeChange(sizeChanges);
                 parseProgressChange(progressChanges);
                 parseRequestDatas(requestDatas);
+                parsePauseAndStart(pauseAndStart);
                 generateFile();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -120,6 +125,20 @@ public class DownloadProcessor extends AbstractProcessor {
                     requestDataMethods.put(typeElement, method);
                 }
                 List<ExecutableElement> methods = requestDataMethods.get(typeElement);
+                methods.add((ExecutableElement) element);
+            }
+        }
+    }
+
+    private void parsePauseAndStart(Set<? extends Element> requestDatas) {
+        if (requestDatas != null && !requestDatas.isEmpty()) {
+            for (Element element : requestDatas) {
+                TypeElement typeElement = (TypeElement) element.getEnclosingElement();
+                if (!pauseStartMethods.containsKey(typeElement)) {
+                    List<ExecutableElement> method = new ArrayList<>();
+                    pauseStartMethods.put(typeElement, method);
+                }
+                List<ExecutableElement> methods = pauseStartMethods.get(typeElement);
                 methods.add((ExecutableElement) element);
             }
         }
@@ -196,22 +215,28 @@ public class DownloadProcessor extends AbstractProcessor {
         builder.addStatement("$T<$T> sizeList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
         builder.addStatement("$T<$T> progressList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
         builder.addStatement("$T<$T> requestList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
+        builder.addStatement("$T<$T> pauseStartList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
 
         for (Map.Entry<TypeElement, List<ExecutableElement>> entry : sizeMethods.entrySet()) {
             List sizeMethods = entry.getValue();
             List progressMethod = progressMethods.get(entry.getKey());
             List reqeustMethod = requestDataMethods.get(entry.getKey());
+            List pauseStartMethod = pauseStartMethods.get(entry.getKey());
             progressMethods.remove(entry.getKey());
             requestDataMethods.remove(entry.getKey());
-            addToBuilder(sizeMethods, progressMethod, reqeustMethod, builder, entry.getKey());
+            pauseStartMethods.remove(entry.getKey());
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, builder, entry.getKey());
         }
 
         for (Map.Entry<TypeElement, List<ExecutableElement>> entry : progressMethods.entrySet()) {
             List sizeMethods = null;
             List progressMethod = entry.getValue();
             List reqeustMethod = requestDataMethods.get(entry.getKey());
+            List pauseStartMethod = pauseStartMethods.get(entry.getKey());
+            progressMethods.remove(entry.getKey());
             requestDataMethods.remove(entry.getKey());
-            addToBuilder(sizeMethods, progressMethod, reqeustMethod, builder, entry.getKey());
+            pauseStartMethods.remove(entry.getKey());
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, builder, entry.getKey());
         }
 
 
@@ -219,14 +244,24 @@ public class DownloadProcessor extends AbstractProcessor {
             List sizeMethods = null;
             List progressMethod = null;
             List reqeustMethod = entry.getValue();
-            addToBuilder(sizeMethods, progressMethod, reqeustMethod, builder, entry.getKey());
+            List pauseStartMethod = pauseStartMethods.get(entry.getKey());
+            pauseStartMethods.remove(entry.getKey());
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, builder, entry.getKey());
+        }
+
+        for (Map.Entry<TypeElement, List<ExecutableElement>> entry : pauseStartMethods.entrySet()) {
+            List sizeMethods = null;
+            List progressMethod = null;
+            List reqeustMethod = null;
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, entry.getValue(), builder, entry.getKey());
         }
     }
 
-    private void addToBuilder(List<ExecutableElement> sizeMethods, List<ExecutableElement> progressMethod, List<ExecutableElement> reqeustMethod, CodeBlock.Builder builder, TypeElement key) {
+    private void addToBuilder(List<ExecutableElement> sizeMethods, List<ExecutableElement> progressMethod, List<ExecutableElement> reqeustMethod, List<ExecutableElement> pauseStartMethod, CodeBlock.Builder builder, TypeElement key) {
         builder.addStatement("sizeList = new $T()", ClassName.get(ArrayList.class));
         builder.addStatement("progressList = new $T()", ClassName.get(ArrayList.class));
         builder.addStatement("requestList = new $T()", ClassName.get(ArrayList.class));
+        builder.addStatement("pauseStartList = new $T()", ClassName.get(ArrayList.class));
 
         if (sizeMethods != null) {
             for (ExecutableElement element : sizeMethods) {
@@ -246,7 +281,13 @@ public class DownloadProcessor extends AbstractProcessor {
             }
         }
 
-        builder.addStatement("SUBSCRIBER_INDEX.put($T.class, new $T(sizeList, progressList, requestList))", ClassName.get(key), ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)));
+        if (pauseStartMethod != null) {
+            for (ExecutableElement element : pauseStartMethod) {
+                builder.addStatement("pauseStartList.add(new $T($S, null))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString());
+            }
+        }
+
+        builder.addStatement("SUBSCRIBER_INDEX.put($T.class, new $T(sizeList, progressList, requestList, pauseStartList))", ClassName.get(key), ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)));
 
     }
 }

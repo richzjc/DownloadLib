@@ -5,4 +5,5 @@ interface SubscribeInfo {
     fun sizeChangeMethod() : List<SubscribeMethod>?
     fun startAllMethod() : List<SubscribeMethod>?
     fun pauseAllMethod() : List<SubscribeMethod>?
+    fun pauseStartMethods() : List<SubscribeMethod>?
 }

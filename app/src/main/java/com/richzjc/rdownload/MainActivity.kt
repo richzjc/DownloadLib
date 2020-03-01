@@ -6,6 +6,7 @@ import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import com.richzjc.download.RDownloadClient
 import com.richzjc.downloadannotation.PauseAll
+import com.richzjc.downloadannotation.PauseAndStart
 import com.richzjc.downloadannotation.SizeChange
 import com.richzjc.downloadannotation.StartAll
 import kotlinx.android.synthetic.main.activity_main.*
@@ -26,6 +27,11 @@ class MainActivity : AppCompatActivity() {
     @StartAll
     fun startAll(){
         pauseOrStart?.text = "已经全部在下载了"
+    }
+
+    @PauseAndStart
+    fun pauseStart(){
+        pauseOrStart?.text = "有暂停的 也有下载的"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
