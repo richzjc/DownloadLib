@@ -3,13 +3,16 @@ package com.richzjc.download.okhttp;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+
 import androidx.annotation.NonNull;
+
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.eventbus.SimpleSubscribeInfo;
 import com.richzjc.download.eventbus.SubscribeMethod;
 import com.richzjc.download.eventbus.WrapNotifyModel;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.task.ParentTask;
+
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -23,6 +26,7 @@ public class MainHandler extends Handler {
     public static final int NOTIFY_SINGLE_PAGE = 5;
     public static final int NOTIFY_ALL_SIZECHANGE_PAGE = 6;
     public static final int NOTIFY_ALL_PAUSE_START = 7;
+    public static final int NOTIFY_ALL_PAUSE_OR_START = 8;
 
     static {
         handler = new MainHandler(Looper.getMainLooper());
@@ -63,9 +67,51 @@ public class MainHandler extends Handler {
                 case NOTIFY_ALL_PAUSE_START:
                     handleNotifyPauseStart((String) msg.obj);
                     break;
+                case NOTIFY_ALL_PAUSE_OR_START:
+                    handlePauseOrStart((RDownloadClient.Builder) msg.obj);
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void handlePauseOrStart(RDownloadClient.Builder obj) {
+        Map<Object, SimpleSubscribeInfo> map = RDownloadClient.Companion.getSubscribeInfos().get(obj.getConfigurationKey());
+        if (obj.getRunning().size() > 0 && obj.getPauseAndError().size() == 0) {
+            if (map != null) {
+                for (Map.Entry<Object, SimpleSubscribeInfo> entry : map.entrySet()) {
+                    List<SubscribeMethod> sizeMethod = entry.getValue().getStartAllMethod();
+                    if (sizeMethod != null) {
+                        for (SubscribeMethod subscribeMethod : sizeMethod) {
+                            try {
+                                Method method = entry.getKey().getClass().getDeclaredMethod(subscribeMethod.getMethodName());
+                                method.setAccessible(true);
+                                method.invoke(entry.getKey());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
+        } else if (obj.getPauseAndError().size() > 0 && obj.getRunning().size() == 0) {
+            if (map != null) {
+                for (Map.Entry<Object, SimpleSubscribeInfo> entry : map.entrySet()) {
+                    List<SubscribeMethod> sizeMethod = entry.getValue().getPauseAllMethod();
+                    if (sizeMethod != null) {
+                        for (SubscribeMethod subscribeMethod : sizeMethod) {
+                            try {
+                                Method method = entry.getKey().getClass().getDeclaredMethod(subscribeMethod.getMethodName());
+                                method.setAccessible(true);
+                                method.invoke(entry.getKey());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
@@ -143,7 +189,7 @@ public class MainHandler extends Handler {
                 }
             }
 
-            if ((pause == null || pause.isEmpty())) {
+            if ((pause == null || pause.isEmpty()) && (running != null && !running.isEmpty())) {
                 List<SubscribeMethod> startAllMethod = subscribeInfo.getStartAllMethod();
                 for (SubscribeMethod subscribeMethod : startAllMethod) {
                     try {
