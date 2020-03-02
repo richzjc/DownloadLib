@@ -25,12 +25,15 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
     public String title;
     private String content;
 
+    private String audioUrl;
+
     public DownloadTask(){
 
     }
 
-    public DownloadTask(String id){
+    public DownloadTask(String id, String audioUrl){
         this.id = id;
+        this.audioUrl = audioUrl;
     }
 
     @Nullable
@@ -57,6 +60,9 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
         if(!TextUtils.isEmpty(image_uri)){
             childTasks.add(new ChildTask(image_uri));
         }
+
+        if(!TextUtils.isEmpty(audioUrl))
+            childTasks.add(new ChildTask(audioUrl));
         return childTasks;
     }
 

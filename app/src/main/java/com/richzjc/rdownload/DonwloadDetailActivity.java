@@ -16,7 +16,11 @@ public class DonwloadDetailActivity extends AppCompatActivity {
     TextView downloadCount;
 
     RDownloadClient downloadClient;
-
+    String[] urls = new String[]{"http://img.tukuppt.com/newpreview_music/08/99/00/5c88d4a8d1f5745026.mp3",
+            "http://img.tukuppt.com/newpreview_music/08/99/00/5c88d4a8d1f5745026.mp3",
+            "http://img.tukuppt.com/newpreview_music/09/00/75/5c894afe4de5f1618.mp3",
+            "http://img.tukuppt.com/newpreview_music/09/00/32/5c89189c4f4cf81405.mp3",
+            "http://img.tukuppt.com/newpreview_music/08/98/97/5c88d1231eeb570304.mp3"};
     @SizeChange
     public void onSizeChange(int size){
         downloadCount.setText("下载队列里面的数量有： " +  size);
@@ -33,9 +37,9 @@ public class DonwloadDetailActivity extends AppCompatActivity {
     }
 
     private void init(){
-        int initId = 3586206;
-        for(int i = 0; i < 10; i++){
-            downloadClient.addTask(new DownloadTask(String.valueOf(initId - i)));
+        int initId = 3586203;
+        for(int i = 0; i < 5; i++){
+            downloadClient.addTask(new DownloadTask(String.valueOf(initId - i), urls[i]));
         }
 
         rv.setLayoutManager(new LinearLayoutManager(this, LinearLayoutManager.VERTICAL,false));
