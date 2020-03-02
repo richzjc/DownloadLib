@@ -4,6 +4,7 @@ import com.richzjc.download.ConstKt;
 import com.richzjc.download.notify.NotifyUI;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.okhttp.MainHandler;
+import com.richzjc.download.util.SaveDataUtilKt;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -32,6 +33,8 @@ public abstract class ParentTask implements IParentTask, Runnable {
     public void setStatus(int status) {
         this.status = status;
         NotifyUI.notifyStatusChange(this);
+        if(status == ConstKt.DOWNLOAD_DELETE)
+            SaveDataUtilKt.deleteData(this);
     }
 
 

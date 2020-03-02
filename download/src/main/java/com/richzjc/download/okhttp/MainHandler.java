@@ -3,16 +3,13 @@ package com.richzjc.download.okhttp;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
-
 import androidx.annotation.NonNull;
-
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.eventbus.SimpleSubscribeInfo;
 import com.richzjc.download.eventbus.SubscribeMethod;
 import com.richzjc.download.eventbus.WrapNotifyModel;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.task.ParentTask;
-
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -25,6 +22,7 @@ public class MainHandler extends Handler {
     public static final int HANDLE_NEXT_MSG = 4;
     public static final int NOTIFY_SINGLE_PAGE = 5;
     public static final int NOTIFY_ALL_SIZECHANGE_PAGE = 6;
+    public static final int NOTIFY_ALL_PAUSE_START = 7;
 
     static {
         handler = new MainHandler(Looper.getMainLooper());
@@ -62,16 +60,39 @@ public class MainHandler extends Handler {
                 case NOTIFY_ALL_SIZECHANGE_PAGE:
                     handleNotifyAllSizeChange((String) msg.obj);
                     break;
+                case NOTIFY_ALL_PAUSE_START:
+                    handleNotifyPauseStart((String) msg.obj);
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
+    private void handleNotifyPauseStart(String configrationKey) {
+        Map<Object, SimpleSubscribeInfo> map = RDownloadClient.Companion.getSubscribeInfos().get(configrationKey);
+        if (map != null) {
+            for (Map.Entry<Object, SimpleSubscribeInfo> entry : map.entrySet()) {
+                List<SubscribeMethod> sizeMethod = entry.getValue().getPauseStart();
+                if (sizeMethod != null) {
+                    for (SubscribeMethod subscribeMethod : sizeMethod) {
+                        try {
+                            Method method = entry.getKey().getClass().getDeclaredMethod(subscribeMethod.getMethodName(), int.class);
+                            method.setAccessible(true);
+                            method.invoke(entry.getKey());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     private void handleNotifyAllSizeChange(String configurationKey) {
         Map<Object, SimpleSubscribeInfo> map = RDownloadClient.Companion.getSubscribeInfos().get(configurationKey);
         RDownloadClient client = RDownloadClient.Companion.getClient(configurationKey);
-        if (client == null)
+        if (client == null || map == null)
             return;
         int downloadSize = client.getAllDownloadSize();
         for (Map.Entry<Object, SimpleSubscribeInfo> entry : map.entrySet()) {

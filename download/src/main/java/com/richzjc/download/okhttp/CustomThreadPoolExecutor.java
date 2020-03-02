@@ -47,7 +47,6 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         synchronized (builder) {
             if (it instanceof ParentTask) {
                 if (((ParentTask) it).getStatus() == ConstKt.DOWNLOAD_DELETE) {
-                    SaveDataUtilKt.deleteData((ParentTask) it);
                     builder.getRunning().remove(it);
                     builder.getPauseAndError().remove(it);
                     NotifyUI.notifyAllSizeChange(builder.getConfigurationKey());

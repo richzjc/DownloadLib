@@ -10,7 +10,6 @@ interface RDownload {
 
     fun pauseAll()
 
-
     fun getAllDownloadData() : List<ParentTask>
 
     fun getAllDownloadSize() : Int
@@ -19,4 +18,5 @@ interface RDownload {
 
     fun getPauseOrErrorData() : List<ParentTask>?
 
+    fun deleteTask(ParentTask : ParentTask?);
 }

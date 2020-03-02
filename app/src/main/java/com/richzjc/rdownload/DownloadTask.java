@@ -56,6 +56,9 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
 
     @Override
     public List<ChildTask> getChildTasks() {
+
+        if(TextUtils.isEmpty(image_uri))
+            return null;
         List<ChildTask> childTasks = new ArrayList<>();
         if(!TextUtils.isEmpty(image_uri)){
             childTasks.add(new ChildTask(image_uri));

@@ -7,6 +7,7 @@ import com.richzjc.download.eventbus.WrapNotifyModel;
 import com.richzjc.download.okhttp.MainHandler;
 import com.richzjc.download.task.ParentTask;
 
+import static com.richzjc.download.okhttp.MainHandler.NOTIFY_ALL_PAUSE_START;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_ALL_SIZECHANGE_PAGE;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_PROGRESS;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_REQUEST;
@@ -48,6 +49,13 @@ public class NotifyUI {
         Message msg = new Message();
         msg.what = NOTIFY_ALL_SIZECHANGE_PAGE;
         msg.obj = configuration;
+        MainHandler.getInstance().sendMessage(msg);
+    }
+
+    public static void notifyAllPauseStart(RDownloadClient.Builder builder) {
+        Message msg = new Message();
+        msg.what = NOTIFY_ALL_PAUSE_START;
+        msg.obj = builder.getConfigurationKey();
         MainHandler.getInstance().sendMessage(msg);
     }
 }
