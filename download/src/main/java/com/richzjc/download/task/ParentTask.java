@@ -33,7 +33,7 @@ public abstract class ParentTask implements IParentTask, Runnable {
     public void setStatus(int status) {
         this.status = status;
         NotifyUI.notifyStatusChange(this);
-        if(status == ConstKt.DOWNLOAD_DELETE)
+        if (status == ConstKt.DOWNLOAD_DELETE)
             SaveDataUtilKt.deleteData(this);
     }
 
@@ -64,9 +64,9 @@ public abstract class ParentTask implements IParentTask, Runnable {
     @Override
     public void run() {
         List<ChildTask> childTasks = getChildTasks();
-        if (status == ConstKt.WAITING || status == ConstKt.DOWNLOADING) {
-            if (childTasks != null) {
-                for (ChildTask childTask : childTasks) {
+        if (childTasks != null) {
+            for (ChildTask childTask : childTasks) {
+                if (status == ConstKt.WAITING || status == ConstKt.DOWNLOADING) {
                     if (!childTask.run())
                         break;
                 }

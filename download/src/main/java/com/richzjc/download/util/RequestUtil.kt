@@ -72,7 +72,8 @@ fun requestLength(okHttpClient: OkHttpClient, r: ParentTask): Boolean {
             request = Request.Builder().url(it.requestUrl).head().build()
             val response = okHttpClient.newCall(request!!).execute()
             if(response != null &&  response.isSuccessful){
-                it.totalLenght = response.body!!.contentLength();
+                val length = response.header("content-length", "0");
+                it.totalLenght = length?.toLong() ?: 0L
                 totalLength += it.totalLenght
             }else{
                 isSuccess = false
