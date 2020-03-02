@@ -60,7 +60,6 @@ public class NotifyUI {
         MainHandler.getInstance().sendMessage(msg);
     }
 
-
     public static void notifyAllPauseOrStart(RDownloadClient.Builder builder) {
         Message msg = new Message();
         msg.what = NOTIFY_ALL_PAUSE_OR_START;

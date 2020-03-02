@@ -9,8 +9,8 @@ class PauseSingleTaskDispatcher(val builder : RDownloadClient.Builder?) {
     fun pauseSingleTask(task : ParentTask?) = builder?.also {
         synchronized(builder){
             task?.status = DOWNLOAD_PAUSE
-            task?.also { builder.pauseAndError.add(it) }
             builder.running.remove(task)
+            task?.also { builder.pauseAndError.add(it) }
         }
     }
 }

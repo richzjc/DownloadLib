@@ -8,11 +8,13 @@ import com.richzjc.download.notify.NotifyUI;
 
 import java.util.Collection;
 import java.util.LinkedList;
-import java.util.function.Predicate;
 
 public class RLinkdList<T> extends LinkedList<T> {
 
     RDownloadClient.Builder builder;
+    public RLinkdList(RDownloadClient.Builder builder){
+        this.builder = builder;
+    }
 
     @Override
     public boolean add(T t) {

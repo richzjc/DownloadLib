@@ -81,8 +81,8 @@ class RDownloadClient private constructor(val builder: Builder) : RDownload by R
         var okHttpClient: OkHttpClient? = null
             private set
 
-        val running = RLinkdList<ParentTask>()
-        val pauseAndError = RLinkdList<ParentTask>()
+        val running = RLinkdList<ParentTask>(this)
+        val pauseAndError = RLinkdList<ParentTask>(this)
 
         fun setMaxDownloadCount(maxCount: Int) = apply {
             require(!(maxCount == null || maxCount <= 0)) { "maxCount必须大于0， 意思是指最多只能添加多少个下载任务" }
