@@ -6,6 +6,7 @@ import com.richzjc.download.notify.NotifyUI
 import com.richzjc.download.okhttp.CustomRejectHander
 import com.richzjc.download.okhttp.CustomThreadPoolExecutor
 import com.richzjc.download.task.ParentTask
+import com.richzjc.download.util.RLinkdList
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.internal.threadFactory
@@ -82,8 +83,8 @@ class RDownloadClient private constructor(val builder: Builder) : RDownload by R
         var okHttpClient: OkHttpClient? = null
             private set
 
-        val running = LinkedList<ParentTask>()
-        val pauseAndError = LinkedList<ParentTask>()
+        val running = RLinkdList<ParentTask>()
+        val pauseAndError = RLinkdList<ParentTask>()
 
         fun setMaxDownloadCount(maxCount: Int) = apply {
             require(!(maxCount == null || maxCount <= 0)) { "maxCount必须大于0， 意思是指最多只能添加多少个下载任务" }
