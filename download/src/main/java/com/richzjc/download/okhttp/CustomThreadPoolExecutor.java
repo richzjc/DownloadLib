@@ -32,8 +32,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
-        //TODO 判断是否有加载完Task, 讲算totalLength 修改状态为下载中
-        if (r instanceof ParentTask) {
+        if (r instanceof ParentTask && ((ParentTask) r).getStatus() != ConstKt.DOWNLOAD_DELETE && ((ParentTask) r).getStatus() != ConstKt.DOWNLOAD_PAUSE) {
             Log.i("download", r.toString());
             ((ParentTask) r).setStatus(ConstKt.DOWNLOADING);
             checkedCache();
@@ -47,15 +46,17 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         synchronized (builder) {
             if (it instanceof ParentTask) {
                 if (((ParentTask) it).getStatus() == ConstKt.DOWNLOAD_DELETE) {
-                    builder.getRunning().remove(it);
-                    builder.getPauseAndError().remove(it);
-                    NotifyUI.notifyAllSizeChange(builder.getConfigurationKey());
+                    boolean flag = builder.getRunning().remove(it);
+                    boolean flag1 = builder.getPauseAndError().remove(it);
+                    if (flag || flag1)
+                        NotifyUI.notifyAllSizeChange(builder.getConfigurationKey());
                 } else if (((ParentTask) it).getProgress() >= 100) {
                     SaveDataUtilKt.saveData((ParentTask) it);
                     ((ParentTask) it).setStatus(ConstKt.DOWNLOAD_FINISH);
-                    builder.getRunning().remove(it);
-                    builder.getPauseAndError().remove(it);
-                    NotifyUI.notifyAllSizeChange(builder.getConfigurationKey());
+                    boolean flag = builder.getRunning().remove(it);
+                    boolean flag1 = builder.getPauseAndError().remove(it);
+                    if (flag || flag1)
+                        NotifyUI.notifyAllSizeChange(builder.getConfigurationKey());
                 } else {
                     if (((ParentTask) it).getStatus() != ConstKt.DOWNLOAD_PAUSE && ((ParentTask) it).getStatus() != ConstKt.DOWNLOAD_ERROR)
                         ((ParentTask) it).setStatus(ConstKt.DOWNLOAD_ERROR);
@@ -77,22 +78,27 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     }
 
     private void checkChildTaskIsEmpty(ParentTask r) {
-        if (r.getChildTasks() != null && r.getChildTasks().size() > 0)
-            return;
-
-        if (r instanceof IRequestParamter) {
+        if (r.getChildTasks() != null && r.getChildTasks().size() > 0){
+            checkHasTotalLength(r);
+        }else if (r instanceof IRequestParamter) {
             boolean isSuccess = RequestUtilKt.request(builder.getOkHttpClient(), (IRequestParamter) r);
             Log.i("download", "result : " + r.toString());
             if (isSuccess) {
                 NotifyUI.notifyRequestData(r);
                 checkHasTotalLength(r);
-            } else{
+            } else {
                 r.setStatus(ConstKt.DOWNLOAD_ERROR);
             }
+        }else{
+            checkHasTotalLength(r);
         }
     }
 
-    private void checkHasTotalLength(ParentTask task) {
-        //TODO 获取所有Task的总长度
+    private void checkHasTotalLength(ParentTask r) {
+        if (r.getStatus() != ConstKt.DOWNLOAD_DELETE && r.getStatus() != ConstKt.DOWNLOAD_PAUSE) {
+            boolean isSuccess = RequestUtilKt.requestLength(builder.getOkHttpClient(), r);
+            if(!isSuccess)
+                r.setStatus(ConstKt.DOWNLOAD_ERROR);
+        }
     }
 }

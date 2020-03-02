@@ -56,7 +56,6 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
 
     @Override
     public List<ChildTask> getChildTasks() {
-
         if(TextUtils.isEmpty(image_uri))
             return null;
         List<ChildTask> childTasks = new ArrayList<>();
@@ -78,6 +77,6 @@ public class DownloadTask extends ParentTask implements IRequestParamter {
     @NonNull
     @Override
     public String toString() {
-        return id + "; title = " + title;
+        return id;
     }
 }
