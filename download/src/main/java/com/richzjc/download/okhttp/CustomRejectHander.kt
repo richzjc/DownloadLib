@@ -27,7 +27,6 @@ class CustomRejectHander(val builder: RDownloadClient.Builder?) : RejectedExecut
                     builder?.running?.remove(it)
                     builder?.pauseAndError?.add(it)
                 }
-                Log.i("download", "reject : " + r.toString());
             }
         }
     }

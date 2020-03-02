@@ -10,13 +10,11 @@ import com.richzjc.download.util.RLinkdList
 import okhttp3.Dispatcher
 import okhttp3.OkHttpClient
 import okhttp3.internal.threadFactory
-import java.util.*
 import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
 class RDownloadClient private constructor(val builder: Builder) : RDownload by RDownloadImpl(builder) {
-
     init {
         configs[builder.configurationKey] = this
     }
