@@ -17,7 +17,6 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
-
 import static com.richzjc.download.okhttp.MainHandler.HANDLE_NEXT_MSG;
 
 public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
@@ -33,6 +32,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
         if (r instanceof ParentTask && ((ParentTask) r).getStatus() != ConstKt.DOWNLOAD_DELETE && ((ParentTask) r).getStatus() != ConstKt.DOWNLOAD_PAUSE) {
+            ((ParentTask) r).bindBuilder(builder);
             Log.i("download", r.toString());
             ((ParentTask) r).setStatus(ConstKt.DOWNLOADING);
             checkedCache();

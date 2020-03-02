@@ -1,6 +1,7 @@
 package com.richzjc.download.task;
 
 import com.richzjc.download.ConstKt;
+import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.notify.NotifyUI;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.okhttp.MainHandler;
@@ -16,6 +17,12 @@ public abstract class ParentTask implements IParentTask, Runnable {
     public long totalLength;
     public long downloadLength;
     private List<Observer> observers;
+
+    private RDownloadClient.Builder builder;
+
+    public void bindBuilder(RDownloadClient.Builder builder){
+        this.builder = builder;
+    }
 
     public int getProgress() {
         return progress;
@@ -67,7 +74,7 @@ public abstract class ParentTask implements IParentTask, Runnable {
         if (childTasks != null) {
             for (ChildTask childTask : childTasks) {
                 if (status == ConstKt.WAITING || status == ConstKt.DOWNLOADING) {
-                    if (!childTask.run())
+                    if (!childTask.run(builder, this))
                         break;
                 }
             }

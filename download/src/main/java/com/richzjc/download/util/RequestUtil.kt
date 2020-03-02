@@ -4,6 +4,7 @@ import android.text.TextUtils
 import android.util.Log
 import com.alibaba.fastjson.JSON
 import com.richzjc.download.DOWNLOADING
+import com.richzjc.download.RDownloadClient
 import com.richzjc.download.okhttp.GET
 import com.richzjc.download.okhttp.HEAD
 import com.richzjc.download.okhttp.IRequestParamter
@@ -89,4 +90,9 @@ fun requestLength(okHttpClient: OkHttpClient, r: ParentTask): Boolean {
     if(isSuccess)
         r.totalLength = totalLength
     return isSuccess
+}
+
+
+fun download(builder : RDownloadClient.Builder?, task: ParentTask?){
+
 }

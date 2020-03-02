@@ -1,11 +1,14 @@
 package com.richzjc.download.task;
 
+import com.richzjc.download.RDownloadClient;
+
 public class ChildTask implements IChildTask{
 
     public String requestUrl;
     public String fileName;
     public long totalLenght;
     public long downloadLenght;
+    public String filePath;
 
     public ChildTask(String requestUrl, String fileName){
         this.requestUrl = requestUrl;
@@ -17,7 +20,8 @@ public class ChildTask implements IChildTask{
     }
 
     @Override
-    public boolean run() {
+    public boolean run(RDownloadClient.Builder builder, ParentTask parentTask) {
+
         return false;
     }
 }
