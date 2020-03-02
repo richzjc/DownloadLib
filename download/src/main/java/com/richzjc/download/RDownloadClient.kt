@@ -1,5 +1,6 @@
 package com.richzjc.download
 
+import android.content.Context
 import com.richzjc.download.eventbus.SimpleSubscribeInfo
 import com.richzjc.download.eventbus.SubscribeInfoIndex
 import com.richzjc.download.notify.NotifyUI
@@ -14,7 +15,8 @@ import java.util.concurrent.SynchronousQueue
 import java.util.concurrent.TimeUnit
 import kotlin.collections.HashMap
 
-class RDownloadClient private constructor(val builder: Builder) : RDownload by RDownloadImpl(builder) {
+class RDownloadClient private constructor(val builder: Builder) :
+    RDownload by RDownloadImpl(builder) {
     init {
         configs[builder.configurationKey] = this
     }
@@ -24,7 +26,7 @@ class RDownloadClient private constructor(val builder: Builder) : RDownload by R
         val subscribeInfos = HashMap<String, HashMap<Any, SimpleSubscribeInfo?>>()
         val callbackMethods = HashMap<Class<out Any>, SimpleSubscribeInfo>()
 
-        fun getClient(configurationKey : String?) : RDownloadClient?{
+        fun getClient(configurationKey: String?): RDownloadClient? {
             configurationKey ?: return null
             return configs[configurationKey]
         }
@@ -44,7 +46,7 @@ class RDownloadClient private constructor(val builder: Builder) : RDownload by R
                 subscribeInfos.put(configurationKey, map)
             }
             val map = subscribeInfos[configurationKey]
-            if(!map!!.containsKey(obj)){
+            if (!map!!.containsKey(obj)) {
                 map[obj] = callbackMethods[obj::class.java]
             }
             NotifyUI.notifySigleChange(obj, configs[configurationKey])
@@ -80,6 +82,10 @@ class RDownloadClient private constructor(val builder: Builder) : RDownload by R
             private set
         var okHttpClient: OkHttpClient? = null
             private set
+        var filePath: String? = null
+            private set
+        var context: Context? = null
+            private set
 
         val running = RLinkdList<ParentTask>(this)
         val pauseAndError = RLinkdList<ParentTask>(this)
@@ -99,7 +105,12 @@ class RDownloadClient private constructor(val builder: Builder) : RDownload by R
             this.threadCount = threadCount
         }
 
-        fun build(): RDownloadClient {
+        fun setDownloadFilePath(filePath: String?) {
+            this.filePath = filePath
+        }
+
+        fun build(context : Context?): RDownloadClient {
+            this.context = context?.applicationContext
             val okHttpName =
                 OkHttpClient::class.java.name.removePrefix("okhttp3.").removeSuffix("Client")
 

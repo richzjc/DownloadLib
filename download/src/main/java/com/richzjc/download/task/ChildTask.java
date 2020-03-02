@@ -1,6 +1,7 @@
 package com.richzjc.download.task;
 
 import com.richzjc.download.RDownloadClient;
+import com.richzjc.download.util.RequestUtilKt;
 
 public class ChildTask implements IChildTask{
 
@@ -21,7 +22,6 @@ public class ChildTask implements IChildTask{
 
     @Override
     public boolean run(RDownloadClient.Builder builder, ParentTask parentTask) {
-
-        return false;
+        return RequestUtilKt.download(builder, parentTask, this);
     }
 }

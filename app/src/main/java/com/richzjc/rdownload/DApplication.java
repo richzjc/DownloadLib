@@ -13,6 +13,6 @@ public class DApplication extends Application {
     public void onCreate() {
         super.onCreate();
         RDownloadClient.Companion.addIndex(new MyEventBusIndex());
-        new RDownloadClient.Builder().setMaxDownloadCount(100).setThreadCount(1).setNetworkType(NetWorkType.WIFI).build();
+        new RDownloadClient.Builder().setMaxDownloadCount(100).setThreadCount(1).setNetworkType(NetWorkType.WIFI).build(this);
     }
 }

@@ -31,7 +31,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
-        if (r instanceof ParentTask && ((ParentTask) r).getStatus() != ConstKt.DOWNLOAD_DELETE && ((ParentTask) r).getStatus() != ConstKt.DOWNLOAD_PAUSE) {
+        if (r instanceof ParentTask && ((ParentTask) r).checkCanDownload()) {
             ((ParentTask) r).bindBuilder(builder);
             Log.i("download", r.toString());
             ((ParentTask) r).setStatus(ConstKt.DOWNLOADING);
@@ -95,7 +95,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     }
 
     private void checkHasTotalLength(ParentTask r) {
-        if (r.getStatus() != ConstKt.DOWNLOAD_DELETE && r.getStatus() != ConstKt.DOWNLOAD_PAUSE) {
+        if (r.checkCanDownload()) {
             boolean isSuccess = RequestUtilKt.requestLength(builder.getOkHttpClient(), r);
             if(!isSuccess)
                 r.setStatus(ConstKt.DOWNLOAD_ERROR);

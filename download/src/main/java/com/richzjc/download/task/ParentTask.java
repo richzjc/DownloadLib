@@ -15,9 +15,8 @@ public abstract class ParentTask implements IParentTask, Runnable {
     private int progress = 0;
     private int status = 0;
     public long totalLength;
-    public long downloadLength;
+    private long downloadLength;
     private List<Observer> observers;
-
     private RDownloadClient.Builder builder;
 
     public void bindBuilder(RDownloadClient.Builder builder){
@@ -28,8 +27,17 @@ public abstract class ParentTask implements IParentTask, Runnable {
         return progress;
     }
 
-    public void setProgress(int progress) {
-        this.progress = progress;
+    public long getDownloadLength(){
+        return downloadLength;
+    }
+
+    public void setDownloadLength(long downloadLength){
+        this.downloadLength = downloadLength;
+        if (totalLength != 0) {
+            progress = Math.round(downloadLength * 100f / totalLength);
+        } else {
+            progress = 0;
+        }
         NotifyUI.notifyProgress(this);
     }
 
@@ -73,11 +81,19 @@ public abstract class ParentTask implements IParentTask, Runnable {
         List<ChildTask> childTasks = getChildTasks();
         if (childTasks != null) {
             for (ChildTask childTask : childTasks) {
-                if (status == ConstKt.WAITING || status == ConstKt.DOWNLOADING) {
+                if (checkCanDownload()) {
                     if (!childTask.run(builder, this))
                         break;
                 }
             }
+        }
+    }
+
+    public boolean checkCanDownload(){
+        if(status == ConstKt.WAITING || status == ConstKt.DOWNLOADING){
+            return true;
+        }else{
+            return false;
         }
     }
 }
