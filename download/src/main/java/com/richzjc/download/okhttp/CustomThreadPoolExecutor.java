@@ -32,11 +32,13 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
         if (r instanceof ParentTask && ((ParentTask) r).checkCanDownload()) {
-            ((ParentTask) r).bindBuilder(builder);
-            Log.i("status", "beforExecute:" +  r);
-            ((ParentTask) r).setStatus(ConstKt.DOWNLOADING);
-            checkedCache();
-            checkChildTaskIsEmpty((ParentTask) r);
+           synchronized (builder){
+               ((ParentTask) r).bindBuilder(builder);
+               Log.i("status", "beforExecute:" +  r);
+               ((ParentTask) r).setStatus(ConstKt.DOWNLOADING);
+               checkedCache();
+               checkChildTaskIsEmpty((ParentTask) r);
+           }
         }
     }
 
