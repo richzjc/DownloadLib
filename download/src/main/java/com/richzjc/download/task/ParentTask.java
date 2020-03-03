@@ -1,5 +1,7 @@
 package com.richzjc.download.task;
 
+import android.util.Log;
+
 import com.richzjc.download.ConstKt;
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.notify.NotifyUI;
@@ -18,6 +20,14 @@ public abstract class ParentTask implements IParentTask, Runnable {
     private long downloadLength;
     private List<Observer> observers;
     private RDownloadClient.Builder builder;
+    private List<ChildTask> childTasks;
+
+    @Override
+    public List<ChildTask> getRealChildTasks() {
+        if(childTasks == null)
+            childTasks = getChildTasks();
+        return childTasks;
+    }
 
     public void bindBuilder(RDownloadClient.Builder builder){
         this.builder = builder;
@@ -31,7 +41,7 @@ public abstract class ParentTask implements IParentTask, Runnable {
         return downloadLength;
     }
 
-    public void setDownloadLength(long downloadLength){
+    public synchronized void setDownloadLength(long downloadLength){
         this.downloadLength = downloadLength;
         if (totalLength != 0) {
             progress = Math.round(downloadLength * 100f / totalLength);
@@ -45,7 +55,8 @@ public abstract class ParentTask implements IParentTask, Runnable {
         return status;
     }
 
-    public void setStatus(int status) {
+    public synchronized void setStatus(int status) {
+        Log.i("setStatus", status + "; + id = " + this);
         this.status = status;
         NotifyUI.notifyStatusChange(this);
         if (status == ConstKt.DOWNLOAD_DELETE)
@@ -78,7 +89,6 @@ public abstract class ParentTask implements IParentTask, Runnable {
 
     @Override
     public void run() {
-        List<ChildTask> childTasks = getChildTasks();
         if (childTasks != null) {
             for (ChildTask childTask : childTasks) {
                 if (checkCanDownload()) {

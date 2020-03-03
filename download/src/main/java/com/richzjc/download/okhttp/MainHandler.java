@@ -3,6 +3,7 @@ package com.richzjc.download.okhttp;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
 import androidx.annotation.NonNull;
 
@@ -123,7 +124,7 @@ public class MainHandler extends Handler {
                 if (sizeMethod != null) {
                     for (SubscribeMethod subscribeMethod : sizeMethod) {
                         try {
-                            Method method = entry.getKey().getClass().getDeclaredMethod(subscribeMethod.getMethodName(), int.class);
+                            Method method = entry.getKey().getClass().getDeclaredMethod(subscribeMethod.getMethodName());
                             method.setAccessible(true);
                             method.invoke(entry.getKey());
                         } catch (Exception e) {
@@ -222,6 +223,7 @@ public class MainHandler extends Handler {
 
     private void handleStatus(ParentTask task) {
         if (task != null && task.getObservers() != null) {
+            Log.i("status", "handleStatus:" + task.getStatus());
             for (Observer observer : task.getObservers()) {
                 observer.notifyStatus();
             }

@@ -33,7 +33,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
         super.beforeExecute(t, r);
         if (r instanceof ParentTask && ((ParentTask) r).checkCanDownload()) {
             ((ParentTask) r).bindBuilder(builder);
-            Log.i("download", r.toString());
+            Log.i("status", "beforExecute:" +  r);
             ((ParentTask) r).setStatus(ConstKt.DOWNLOADING);
             checkedCache();
             checkChildTaskIsEmpty((ParentTask) r);
@@ -43,6 +43,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     @Override
     protected void afterExecute(Runnable it, Throwable t) {
         super.afterExecute(it, t);
+        Log.i("download", "afterExecute");
         synchronized (builder) {
             if (it instanceof ParentTask) {
                 if (((ParentTask) it).getStatus() == ConstKt.DOWNLOAD_DELETE) {
@@ -78,7 +79,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     }
 
     private void checkChildTaskIsEmpty(ParentTask r) {
-        if (r.getChildTasks() != null && r.getChildTasks().size() > 0){
+        if (r.getRealChildTasks() != null && r.getRealChildTasks().size() > 0){
             checkHasTotalLength(r);
         }else if (r instanceof IRequestParamter) {
             boolean isSuccess = RequestUtilKt.request(builder.getOkHttpClient(), (IRequestParamter) r);

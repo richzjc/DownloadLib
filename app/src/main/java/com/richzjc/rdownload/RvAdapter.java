@@ -109,7 +109,6 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
 
 
         private void setStatus(T downloadTask) {
-            Log.i("download", "init");
             if (downloadTask != null) {
                 if (downloadTask.getStatus() == ConstKt.DOWNLOADING) {
                     showState.setText(downloadTask.getProgress() + "%");

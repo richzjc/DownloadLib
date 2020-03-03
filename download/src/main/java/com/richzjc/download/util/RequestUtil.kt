@@ -5,6 +5,7 @@ import android.util.Log
 import com.alibaba.fastjson.JSON
 import com.richzjc.download.DOWNLOADING
 import com.richzjc.download.RDownloadClient
+import com.richzjc.download.WAITING
 import com.richzjc.download.okhttp.GET
 import com.richzjc.download.okhttp.HEAD
 import com.richzjc.download.okhttp.IRequestParamter
@@ -73,8 +74,8 @@ fun requestLength(okHttpClient: OkHttpClient, r: ParentTask): Boolean {
     var isSuccess = true
     var totalLength = 0L
     var request: Request? = null
-    r.childTasks?.forEach {
-        if (r.status == DOWNLOADING) {
+    r.realChildTasks?.forEach {
+        if (r.status == DOWNLOADING || r.status == WAITING) {
             request = Request.Builder().url(it.requestUrl).head().build()
             val response = okHttpClient.newCall(request!!).execute()
             if (response != null && response.isSuccessful) {
@@ -115,7 +116,8 @@ fun download(builder: RDownloadClient.Builder?, parentTask: ParentTask, task: Ch
 
     val range = "bytes=" + file.length() + "-"
     val request = Request.Builder().url(task!!.requestUrl)
-        .addHeader("RANGE", range)
+            //TODO 暂时先注释掉下面这一句代码
+//        .addHeader("RANGE", range)
         .addHeader("Connection", "close")
         .build()
     try {

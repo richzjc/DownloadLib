@@ -7,11 +7,12 @@ class PauseAllDispater(val builder: RDownloadClient.Builder?) {
 
     fun pauseAll() = builder?.also {
         synchronized(builder) {
-            builder.running?.forEach {
+            val list = ArrayList(builder.running)
+            builder.running.clear()
+            list?.forEach {
                 it.status = DOWNLOAD_PAUSE
                 builder.pauseAndError.add(it)
             }
-            builder.running.clear()
         }
     }
 }
