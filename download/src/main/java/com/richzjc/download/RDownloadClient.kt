@@ -46,7 +46,7 @@ class RDownloadClient private constructor(val builder: Builder) :
                 subscribeInfos.put(configurationKey, map)
             }
             val map = subscribeInfos[configurationKey]
-            if (!map!!.containsKey(obj)) {
+            if (!map!!.containsKey(obj) && callbackMethods.containsKey(obj::class.java)) {
                 map[obj] = callbackMethods[obj::class.java]
             }
             NotifyUI.notifySigleChange(obj, configs[configurationKey])

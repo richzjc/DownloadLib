@@ -107,7 +107,11 @@ fun download(builder: RDownloadClient.Builder?, parentTask: ParentTask, task: Ch
 
     Log.i("file", filePath)
     val file = File(filePath)
-    if (!FileUtil.createFile(file.absolutePath)) return false
+    if (!FileUtil.createFile(file.absolutePath))
+        return false
+
+    if(task!!.totalLenght > 0 && file.length() ==  task!!.totalLenght)
+        return true
 
     val range = "bytes=" + file.length() + "-"
     val request = Request.Builder().url(task!!.requestUrl)

@@ -9,6 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.richzjc.download.ConstKt;
+import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.task.ParentTask;
 import com.richzjc.rdownload.widget.ProgressWscnImageView;
@@ -56,6 +57,8 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
         TextView newsTitle;
         TextView newsTime;
 
+        RDownloadClient client;
+
         Observer observer = new Observer() {
             @Override
             public void notifyRequestData() {
@@ -80,11 +83,21 @@ public class RvAdapter<T extends ParentTask> extends RecyclerView.Adapter {
 
         public MyHolder(@NonNull View itemView) {
             super(itemView);
+            client = RDownloadClient.Companion.bind(this);
             image = itemView.findViewById(R.id.image);
             showState = itemView.findViewById(R.id.showState);
             imageParent = itemView.findViewById(R.id.image_parent);
             newsTitle = itemView.findViewById(R.id.news_title);
             newsTime = itemView.findViewById(R.id.news_time);
+            itemView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if(downloadTask.getStatus() == ConstKt.DOWNLOADING || downloadTask.getStatus() == ConstKt.WAITING)
+                        client.pauseTask(downloadTask);
+                    else
+                        client.addTask(downloadTask);
+                }
+            });
         }
 
         public void doBindData(T downloadTask) {

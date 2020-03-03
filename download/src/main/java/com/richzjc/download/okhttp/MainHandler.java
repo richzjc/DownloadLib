@@ -160,6 +160,8 @@ public class MainHandler extends Handler {
     private void handleNotifySinglePage(WrapNotifyModel wrapNotifyModel) {
         if (wrapNotifyModel != null) {
             SimpleSubscribeInfo subscribeInfo = RDownloadClient.Companion.getCallbackMethods().get(wrapNotifyModel.getObj().getClass());
+            if(subscribeInfo == null)
+                return;
             List<SubscribeMethod> sizeMethod = subscribeInfo.getSizeChangeMethod();
             int allDownloadSize = wrapNotifyModel.getClient().getAllDownloadSize();
             if (sizeMethod != null) {

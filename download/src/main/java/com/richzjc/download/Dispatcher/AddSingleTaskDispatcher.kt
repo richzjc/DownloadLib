@@ -12,17 +12,21 @@ class AddSingleTaskDispatcher(val builder: RDownloadClient.Builder?) {
     fun addTask(parentTask: ParentTask?) = builder?.also {
         synchronized(builder){
             parentTask?.also {
-                if (it.status == WAITING || it.status == DOWNLOADING) {
-                    builder?.running?.add(it)
-                    builder?.okHttpClient?.dispatcher?.executorService?.execute(it)
-                } else if(it.status == DOWNLOAD_DELETE){
-                    builder?.running?.remove(it)
-                    builder?.pauseAndError?.remove(it)
+               if(it.status == DOWNLOAD_DELETE){
+                    val flag = builder?.running?.remove(it)
+                    val flag1 = builder?.pauseAndError?.remove(it)
+                    if(flag || flag1)
+                        NotifyUI.notifyAllSizeChange(builder.configurationKey)
                 }else {
-                    builder?.running?.remove(it)
-                    builder?.pauseAndError?.add(it)
+                   it.status = WAITING
+                   val flag = builder.pauseAndError.remove(it)
+                   val flag1 = builder.running.remove(it)
+                   builder?.running?.add(it)
+                   builder?.okHttpClient?.dispatcher?.executorService?.execute(it)
+                   if(!flag && !flag1){
+                       NotifyUI.notifyAllSizeChange(builder.configurationKey)
+                   }
                 }
-                NotifyUI.notifyAllSizeChange(builder.configurationKey)
             }
         }
     }
