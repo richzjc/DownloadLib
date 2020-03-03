@@ -116,8 +116,7 @@ fun download(builder: RDownloadClient.Builder?, parentTask: ParentTask, task: Ch
 
     val range = "bytes=" + file.length() + "-"
     val request = Request.Builder().url(task!!.requestUrl)
-            //TODO 暂时先注释掉下面这一句代码
-//        .addHeader("RANGE", range)
+        .addHeader("RANGE", range)
         .addHeader("Connection", "close")
         .build()
     try {
