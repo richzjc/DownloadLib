@@ -22,14 +22,6 @@
             android:textSize="10sp" />
 
         <Button
-            android:id="@+id/pause"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:padding="0dp"
-            android:text="pause"
-            android:textSize="10sp" />
-
-        <Button
             android:id="@+id/pauseAll"
             android:layout_width="50dp"
             android:layout_height="50dp"

@@ -1,6 +1,8 @@
 package com.richzjc.rdownload;
 
 import android.os.Bundle;
+import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -14,6 +16,8 @@ public class DonwloadDetailActivity extends AppCompatActivity {
 
     RecyclerView rv;
     TextView downloadCount;
+    Button pauseAll;
+    Button startAll;
 
     RDownloadClient downloadClient;
 //    String[] urls = new String[]{"http://img.tukuppt.com/newpreview_music/08/99/00/5c88d4a8d1f5745026.mp3",
@@ -39,8 +43,27 @@ public class DonwloadDetailActivity extends AppCompatActivity {
         setContentView(R.layout.paid_recycler_item_downloading_article);
         rv = findViewById(R.id.rv);
         downloadCount = findViewById(R.id.downloadCount);
+        pauseAll = findViewById(R.id.pauseAll);
+        startAll = findViewById(R.id.startAll);
         downloadClient = RDownloadClient.Companion.bind(this);
         init();
+        setListener();
+    }
+
+    private void setListener(){
+        pauseAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadClient.pauseAll();
+            }
+        });
+
+        startAll.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                downloadClient.startAll();
+            }
+        });
     }
 
     private void init(){
