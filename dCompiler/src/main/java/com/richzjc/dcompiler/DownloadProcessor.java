@@ -375,14 +375,14 @@ public class DownloadProcessor extends AbstractProcessor {
         }
 
         if (pauseStartEmptyMethod != null) {
-            for (ExecutableElement element : pauseStartMethod) {
+            for (ExecutableElement element : pauseStartEmptyMethod) {
                 builder.addStatement("pauseStartEmptyList.add(new $T($S, null))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString());
             }
         }
 
 
         if (netChangeMethod != null) {
-            for (ExecutableElement element : pauseStartMethod) {
+            for (ExecutableElement element : netChangeMethod) {
                 builder.addStatement("netChangeList.add(new $T($S, null))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString());
             }
         }
