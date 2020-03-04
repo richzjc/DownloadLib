@@ -113,8 +113,14 @@ public class RLinkdList<T> extends LinkedList<T> {
     }
 
     private void checkRemove(int originSize, int newSize){
-        if(originSize > 0 && newSize == 0)
+        if(originSize > 0 && newSize == 0) {
             checkPauseOrStart();
+            checkPauseStartEmpty();
+        }
+    }
+
+    private void checkPauseStartEmpty() {
+        NotifyUI.notifyPauseStartEmpty(builder);
     }
 
     private void checkPauseOrStart(){

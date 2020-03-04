@@ -12,6 +12,7 @@ import static com.richzjc.download.okhttp.MainHandler.NOTIFY_ALL_PAUSE_OR_START;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_ALL_PAUSE_START;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_ALL_SIZECHANGE_PAGE;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_NET_CHANGE;
+import static com.richzjc.download.okhttp.MainHandler.NOTIFY_PAUSE_START_EMPTY;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_PROGRESS;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_REQUEST;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_SINGLE_PAGE;
@@ -73,6 +74,13 @@ public class NotifyUI {
         Message msg = new Message();
         msg.what = NOTIFY_NET_CHANGE;
         msg.obj = netType;
+        MainHandler.getInstance().sendMessage(msg);
+    }
+
+    public static void notifyPauseStartEmpty(RDownloadClient.Builder builder) {
+        Message msg = new Message();
+        msg.what = NOTIFY_PAUSE_START_EMPTY;
+        msg.obj = builder;
         MainHandler.getInstance().sendMessage(msg);
     }
 }

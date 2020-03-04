@@ -29,6 +29,7 @@ public class MainHandler extends Handler {
     public static final int NOTIFY_ALL_PAUSE_START = 7;
     public static final int NOTIFY_ALL_PAUSE_OR_START = 8;
     public static final int NOTIFY_NET_CHANGE = 9;
+    public static final int NOTIFY_PAUSE_START_EMPTY = 10;
 
     static {
         handler = new MainHandler(Looper.getMainLooper());
@@ -75,9 +76,34 @@ public class MainHandler extends Handler {
                 case NOTIFY_NET_CHANGE:
                     handleNetChange((NetWorkType)msg.obj);
                     break;
+                case NOTIFY_PAUSE_START_EMPTY:
+                    handlePauseStartEmpty((RDownloadClient.Builder) msg.obj);
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
+        }
+    }
+
+    private void handlePauseStartEmpty(RDownloadClient.Builder obj) {
+        Map<Object, SimpleSubscribeInfo> map = RDownloadClient.Companion.getSubscribeInfos().get(obj.getConfigurationKey());
+        if (obj.getRunning().size() == 0 && obj.getPauseAndError().size() == 0) {
+            if (map != null) {
+                for (Map.Entry<Object, SimpleSubscribeInfo> entry : map.entrySet()) {
+                    List<SubscribeMethod> sizeMethod = entry.getValue().getPauseStartEmpty();
+                    if (sizeMethod != null) {
+                        for (SubscribeMethod subscribeMethod : sizeMethod) {
+                            try {
+                                Method method = entry.getKey().getClass().getDeclaredMethod(subscribeMethod.getMethodName());
+                                method.setAccessible(true);
+                                method.invoke(entry.getKey());
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
