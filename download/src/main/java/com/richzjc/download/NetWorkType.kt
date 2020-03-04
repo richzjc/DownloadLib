@@ -1,5 +1,5 @@
 package com.richzjc.download
 
 enum class NetWorkType {
-    WIFI, WIFI_MOBIL
+    AUTO, WIFI, MOBILE, NONE
 }
