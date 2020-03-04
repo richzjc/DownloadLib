@@ -6,4 +6,6 @@ interface SubscribeInfo {
     fun startAllMethod() : List<SubscribeMethod>?
     fun pauseAllMethod() : List<SubscribeMethod>?
     fun pauseStartMethods() : List<SubscribeMethod>?
+    fun pauseStartEmptyMethods() : List<SubscribeMethod>?
+    fun netChangeMethods() : List<SubscribeMethod>?
 }

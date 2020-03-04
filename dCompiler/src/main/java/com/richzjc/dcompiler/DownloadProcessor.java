@@ -3,8 +3,10 @@ package com.richzjc.dcompiler;
 import com.google.auto.service.AutoService;
 import com.richzjc.dcompiler.util.Const;
 import com.richzjc.dcompiler.util.EmptyUtils;
+import com.richzjc.downloadannotation.NetChange;
 import com.richzjc.downloadannotation.PauseAll;
 import com.richzjc.downloadannotation.PauseAndStart;
+import com.richzjc.downloadannotation.PauseStartEmpty;
 import com.richzjc.downloadannotation.StartAll;
 import com.richzjc.downloadannotation.SizeChange;
 import com.squareup.javapoet.ClassName;
@@ -52,6 +54,8 @@ public class DownloadProcessor extends AbstractProcessor {
     private Map<TypeElement, List<ExecutableElement>> progressMethods = new HashMap<>();
     private Map<TypeElement, List<ExecutableElement>> requestDataMethods = new HashMap<>();
     private Map<TypeElement, List<ExecutableElement>> pauseStartMethods = new HashMap<>();
+    private Map<TypeElement, List<ExecutableElement>> pauseStartEmptyMethods = new HashMap<>();
+    private Map<TypeElement, List<ExecutableElement>> netChangeMethods = new HashMap<>();
 
     @Override
     public synchronized void init(ProcessingEnvironment processingEnv) {
@@ -82,6 +86,8 @@ public class DownloadProcessor extends AbstractProcessor {
         set.add(PauseAll.class.getName());
         set.add(StartAll.class.getName());
         set.add(PauseAndStart.class.getName());
+        set.add(PauseStartEmpty.class.getName());
+        set.add(NetChange.class.getName());
         return set;
     }
 
@@ -98,6 +104,8 @@ public class DownloadProcessor extends AbstractProcessor {
                 Set<? extends Element> progressChanges = roundEnv.getElementsAnnotatedWith(PauseAll.class);
                 Set<? extends Element> requestDatas = roundEnv.getElementsAnnotatedWith(StartAll.class);
                 Set<? extends Element> pauseAndStart = roundEnv.getElementsAnnotatedWith(PauseAndStart.class);
+                Set<? extends Element> pauseStartEmpty = roundEnv.getElementsAnnotatedWith(PauseStartEmpty.class);
+                Set<? extends Element> netChanges = roundEnv.getElementsAnnotatedWith(NetChange.class);
 
                 messager.printMessage(Diagnostic.Kind.NOTE, "size =  " + sizeChanges.size());
 
@@ -106,6 +114,8 @@ public class DownloadProcessor extends AbstractProcessor {
                 parseProgressChange(progressChanges);
                 parseRequestDatas(requestDatas);
                 parsePauseAndStart(pauseAndStart);
+                parsePauseStartEmpty(pauseStartEmpty);
+                parseNetChange(netChanges);
                 generateFile();
             } catch (Exception e) {
                 e.printStackTrace();
@@ -114,6 +124,34 @@ public class DownloadProcessor extends AbstractProcessor {
         }
 
         return false;
+    }
+
+    private void parseNetChange(Set<? extends Element> requestDatas) {
+        if (requestDatas != null && !requestDatas.isEmpty()) {
+            for (Element element : requestDatas) {
+                TypeElement typeElement = (TypeElement) element.getEnclosingElement();
+                if (!netChangeMethods.containsKey(typeElement)) {
+                    List<ExecutableElement> method = new ArrayList<>();
+                    netChangeMethods.put(typeElement, method);
+                }
+                List<ExecutableElement> methods = netChangeMethods.get(typeElement);
+                methods.add((ExecutableElement) element);
+            }
+        }
+    }
+
+    private void parsePauseStartEmpty(Set<? extends Element> requestDatas) {
+        if (requestDatas != null && !requestDatas.isEmpty()) {
+            for (Element element : requestDatas) {
+                TypeElement typeElement = (TypeElement) element.getEnclosingElement();
+                if (!pauseStartEmptyMethods.containsKey(typeElement)) {
+                    List<ExecutableElement> method = new ArrayList<>();
+                    pauseStartEmptyMethods.put(typeElement, method);
+                }
+                List<ExecutableElement> methods = pauseStartEmptyMethods.get(typeElement);
+                methods.add((ExecutableElement) element);
+            }
+        }
     }
 
     private void parseRequestDatas(Set<? extends Element> requestDatas) {
@@ -216,16 +254,23 @@ public class DownloadProcessor extends AbstractProcessor {
         builder.addStatement("$T<$T> progressList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
         builder.addStatement("$T<$T> requestList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
         builder.addStatement("$T<$T> pauseStartList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
+        builder.addStatement("$T<$T> pauseStartEmptyList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
+        builder.addStatement("$T<$T> netChangeList", ClassName.get(List.class), ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)));
 
         for (Map.Entry<TypeElement, List<ExecutableElement>> entry : sizeMethods.entrySet()) {
             List sizeMethods = entry.getValue();
             List progressMethod = progressMethods.get(entry.getKey());
             List reqeustMethod = requestDataMethods.get(entry.getKey());
             List pauseStartMethod = pauseStartMethods.get(entry.getKey());
+            List pauseStartEmptyMethod = pauseStartEmptyMethods.get(entry.getKey());
+            List netChangeMethod = netChangeMethods.get(entry.getKey());
+
             progressMethods.remove(entry.getKey());
             requestDataMethods.remove(entry.getKey());
             pauseStartMethods.remove(entry.getKey());
-            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, builder, entry.getKey());
+            pauseStartEmptyMethods.remove(entry.getKey());
+            netChangeMethods.remove(entry.getKey());
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, pauseStartEmptyMethod, netChangeMethod, builder, entry.getKey());
         }
 
         for (Map.Entry<TypeElement, List<ExecutableElement>> entry : progressMethods.entrySet()) {
@@ -233,10 +278,14 @@ public class DownloadProcessor extends AbstractProcessor {
             List progressMethod = entry.getValue();
             List reqeustMethod = requestDataMethods.get(entry.getKey());
             List pauseStartMethod = pauseStartMethods.get(entry.getKey());
+            List pauseStartEmptyMethod = pauseStartEmptyMethods.get(entry.getKey());
+            List netChangeMethod = netChangeMethods.get(entry.getKey());
             progressMethods.remove(entry.getKey());
             requestDataMethods.remove(entry.getKey());
             pauseStartMethods.remove(entry.getKey());
-            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, builder, entry.getKey());
+            pauseStartEmptyMethods.remove(entry.getKey());
+            netChangeMethods.remove(entry.getKey());
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, pauseStartEmptyMethod, netChangeMethod, builder, entry.getKey());
         }
 
 
@@ -245,23 +294,61 @@ public class DownloadProcessor extends AbstractProcessor {
             List progressMethod = null;
             List reqeustMethod = entry.getValue();
             List pauseStartMethod = pauseStartMethods.get(entry.getKey());
+            List pauseStartEmptyMethod = pauseStartEmptyMethods.get(entry.getKey());
+            List netChangeMethod = netChangeMethods.get(entry.getKey());
             pauseStartMethods.remove(entry.getKey());
-            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, builder, entry.getKey());
+            pauseStartEmptyMethods.remove(entry.getKey());
+            netChangeMethods.remove(entry.getKey());
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, pauseStartEmptyMethod, netChangeMethod, builder, entry.getKey());
         }
 
         for (Map.Entry<TypeElement, List<ExecutableElement>> entry : pauseStartMethods.entrySet()) {
             List sizeMethods = null;
             List progressMethod = null;
             List reqeustMethod = null;
-            addToBuilder(sizeMethods, progressMethod, reqeustMethod, entry.getValue(), builder, entry.getKey());
+            List pauseStartMethod = entry.getValue();
+            List pauseStartEmptyMethod = pauseStartEmptyMethods.get(entry.getKey());
+            List netChangeMethod = netChangeMethods.get(entry.getKey());
+            pauseStartEmptyMethods.remove(entry.getKey());
+            netChangeMethods.remove(entry.getKey());
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, pauseStartEmptyMethod, netChangeMethod, builder, entry.getKey());
+        }
+
+        for (Map.Entry<TypeElement, List<ExecutableElement>> entry : pauseStartEmptyMethods.entrySet()) {
+            List sizeMethods = null;
+            List progressMethod = null;
+            List reqeustMethod = null;
+            List pauseStartMethod = null;
+            List pauseStartEmptyMethod = entry.getValue();
+            List netChangeMethod = netChangeMethods.get(entry.getKey());
+            netChangeMethods.remove(entry.getKey());
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, pauseStartEmptyMethod, netChangeMethod, builder, entry.getKey());
+        }
+
+        for (Map.Entry<TypeElement, List<ExecutableElement>> entry : netChangeMethods.entrySet()) {
+            List sizeMethods = null;
+            List progressMethod = null;
+            List reqeustMethod = null;
+            List pauseStartMethod = null;
+            List pauseStartEmptyMethod = null;
+            List netChangeMethod = entry.getValue();
+            addToBuilder(sizeMethods, progressMethod, reqeustMethod, pauseStartMethod, pauseStartEmptyMethod, netChangeMethod, builder, entry.getKey());
         }
     }
 
-    private void addToBuilder(List<ExecutableElement> sizeMethods, List<ExecutableElement> progressMethod, List<ExecutableElement> reqeustMethod, List<ExecutableElement> pauseStartMethod, CodeBlock.Builder builder, TypeElement key) {
+    private void addToBuilder(List<ExecutableElement> sizeMethods,
+                              List<ExecutableElement> progressMethod,
+                              List<ExecutableElement> reqeustMethod,
+                              List<ExecutableElement> pauseStartMethod,
+                              List<ExecutableElement> pauseStartEmptyMethod,
+                              List<ExecutableElement> netChangeMethod,
+                              CodeBlock.Builder builder, TypeElement key) {
         builder.addStatement("sizeList = new $T()", ClassName.get(ArrayList.class));
         builder.addStatement("progressList = new $T()", ClassName.get(ArrayList.class));
         builder.addStatement("requestList = new $T()", ClassName.get(ArrayList.class));
         builder.addStatement("pauseStartList = new $T()", ClassName.get(ArrayList.class));
+        builder.addStatement("pauseStartEmptyList = new $T()", ClassName.get(ArrayList.class));
+        builder.addStatement("netChangeList = new $T()", ClassName.get(ArrayList.class));
 
         if (sizeMethods != null) {
             for (ExecutableElement element : sizeMethods) {
@@ -287,7 +374,21 @@ public class DownloadProcessor extends AbstractProcessor {
             }
         }
 
-        builder.addStatement("SUBSCRIBER_INDEX.put($T.class, new $T(sizeList, progressList, requestList, pauseStartList))", ClassName.get(key), ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)));
+        if (pauseStartEmptyMethod != null) {
+            for (ExecutableElement element : pauseStartMethod) {
+                builder.addStatement("pauseStartEmptyList.add(new $T($S, null))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString());
+            }
+        }
+
+
+        if (netChangeMethod != null) {
+            for (ExecutableElement element : pauseStartMethod) {
+                builder.addStatement("netChangeList.add(new $T($S, null))", ClassName.get(elementUtils.getTypeElement(Const.SUBSCRIBE_METHOD_PATH)), element.getSimpleName().toString());
+            }
+        }
+
+
+        builder.addStatement("SUBSCRIBER_INDEX.put($T.class, new $T(sizeList, progressList, requestList, pauseStartList, pauseStartEmptyList, netChangeList))", ClassName.get(key), ClassName.get(elementUtils.getTypeElement(Const.SIMPLE_SUBSCRIBE_INFO)));
 
     }
 }

@@ -4,11 +4,9 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
+import com.richzjc.download.NetWorkType
 import com.richzjc.download.RDownloadClient
-import com.richzjc.downloadannotation.PauseAll
-import com.richzjc.downloadannotation.PauseAndStart
-import com.richzjc.downloadannotation.SizeChange
-import com.richzjc.downloadannotation.StartAll
+import com.richzjc.downloadannotation.*
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
@@ -32,6 +30,16 @@ class MainActivity : AppCompatActivity() {
     @PauseAndStart
     fun pauseStart(){
         pauseOrStart?.text = "有暂停的 也有下载的"
+    }
+
+    @NetChange
+    fun onNetChange(type : NetWorkType?){
+
+    }
+
+    @PauseStartEmpty
+    fun onPauseStartEmpty(){
+
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
