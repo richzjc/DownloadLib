@@ -75,7 +75,7 @@ fun requestLength(okHttpClient: OkHttpClient, r: ParentTask): Boolean {
     var totalLength = 0L
     var request: Request? = null
     r.realChildTasks?.forEach {
-        if (r.status == DOWNLOADING || r.status == WAITING) {
+        if (r.checkCanDownload()) {
             request = Request.Builder().url(it.requestUrl).head().build()
             val response = okHttpClient.newCall(request!!).execute()
             if (response != null && response.isSuccessful) {

@@ -2,6 +2,7 @@ package com.richzjc.download.notify;
 
 import android.os.Message;
 
+import com.richzjc.download.NetWorkType;
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.eventbus.WrapNotifyModel;
 import com.richzjc.download.okhttp.MainHandler;
@@ -10,6 +11,7 @@ import com.richzjc.download.task.ParentTask;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_ALL_PAUSE_OR_START;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_ALL_PAUSE_START;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_ALL_SIZECHANGE_PAGE;
+import static com.richzjc.download.okhttp.MainHandler.NOTIFY_NET_CHANGE;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_PROGRESS;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_REQUEST;
 import static com.richzjc.download.okhttp.MainHandler.NOTIFY_SINGLE_PAGE;
@@ -64,6 +66,13 @@ public class NotifyUI {
         Message msg = new Message();
         msg.what = NOTIFY_ALL_PAUSE_OR_START;
         msg.obj = builder;
+        MainHandler.getInstance().sendMessage(msg);
+    }
+
+    public static void notifyNetChange(NetWorkType netType) {
+        Message msg = new Message();
+        msg.what = NOTIFY_NET_CHANGE;
+        msg.obj = netType;
         MainHandler.getInstance().sendMessage(msg);
     }
 }

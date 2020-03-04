@@ -4,16 +4,15 @@ import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
-
 import androidx.annotation.NonNull;
 
+import com.richzjc.download.NetWorkType;
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.eventbus.SimpleSubscribeInfo;
 import com.richzjc.download.eventbus.SubscribeMethod;
 import com.richzjc.download.eventbus.WrapNotifyModel;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.task.ParentTask;
-
 import java.lang.reflect.Method;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +27,7 @@ public class MainHandler extends Handler {
     public static final int NOTIFY_ALL_SIZECHANGE_PAGE = 6;
     public static final int NOTIFY_ALL_PAUSE_START = 7;
     public static final int NOTIFY_ALL_PAUSE_OR_START = 8;
+    public static final int NOTIFY_NET_CHANGE = 9;
 
     static {
         handler = new MainHandler(Looper.getMainLooper());
@@ -71,10 +71,17 @@ public class MainHandler extends Handler {
                 case NOTIFY_ALL_PAUSE_OR_START:
                     handlePauseOrStart((RDownloadClient.Builder) msg.obj);
                     break;
+                case NOTIFY_NET_CHANGE:
+                    handleNetChange((NetWorkType)msg.obj);
+                    break;
             }
         } catch (Exception e) {
             e.printStackTrace();
         }
+    }
+
+    private void handleNetChange(NetWorkType obj) {
+
     }
 
     private void handlePauseOrStart(RDownloadClient.Builder obj) {
