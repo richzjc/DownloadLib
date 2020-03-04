@@ -1,11 +1,13 @@
 package com.richzjc.download
 
 import android.content.Context
+import android.content.IntentFilter
 import com.richzjc.download.eventbus.SimpleSubscribeInfo
 import com.richzjc.download.eventbus.SubscribeInfoIndex
 import com.richzjc.download.notify.NotifyUI
 import com.richzjc.download.okhttp.CustomRejectHander
 import com.richzjc.download.okhttp.CustomThreadPoolExecutor
+import com.richzjc.download.receiver.NetBroadCastReceiver
 import com.richzjc.download.task.ParentTask
 import com.richzjc.download.util.RLinkdList
 import okhttp3.Dispatcher
@@ -25,7 +27,7 @@ class RDownloadClient private constructor(val builder: Builder) :
         private val configs = HashMap<String, RDownloadClient>()
         val subscribeInfos = HashMap<String, HashMap<Any, SimpleSubscribeInfo?>>()
         val callbackMethods = HashMap<Class<out Any>, SimpleSubscribeInfo>()
-
+        private var netReceiver: NetBroadCastReceiver? = null
         fun getClient(configurationKey: String?): RDownloadClient? {
             configurationKey ?: return null
             return configs[configurationKey]
@@ -69,6 +71,15 @@ class RDownloadClient private constructor(val builder: Builder) :
         fun unBind(obj: Any) {
             unBind("", obj)
         }
+
+        fun registerReiver(context: Context?) {
+            if (netReceiver == null) {
+                netReceiver = NetBroadCastReceiver()
+                val filter = IntentFilter()
+                filter.addAction(ANDROID_NET_CHANGE_ACTION)
+                context?.registerReceiver(netReceiver, filter);
+            }
+        }
     }
 
     class Builder {
@@ -109,8 +120,9 @@ class RDownloadClient private constructor(val builder: Builder) :
             this.filePath = filePath
         }
 
-        fun build(context : Context?): RDownloadClient {
+        fun build(context: Context?): RDownloadClient {
             this.context = context?.applicationContext
+            registerReiver(this.context)
             val okHttpName =
                 OkHttpClient::class.java.name.removePrefix("okhttp3.").removeSuffix("Client")
 

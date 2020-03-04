@@ -3,10 +3,12 @@ package com.richzjc.download.task;
 import android.util.Log;
 
 import com.richzjc.download.ConstKt;
+import com.richzjc.download.NetWorkType;
 import com.richzjc.download.RDownloadClient;
 import com.richzjc.download.notify.NotifyUI;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.okhttp.MainHandler;
+import com.richzjc.download.util.NetworkUtils;
 import com.richzjc.download.util.SaveDataUtilKt;
 
 import java.util.ArrayList;
@@ -100,10 +102,21 @@ public abstract class ParentTask implements IParentTask, Runnable {
     }
 
     public boolean checkCanDownload(){
-        if(status == ConstKt.WAITING || status == ConstKt.DOWNLOADING){
+        if((status == ConstKt.WAITING || status == ConstKt.DOWNLOADING) && checkNet()){
             return true;
         }else{
             return false;
         }
+    }
+
+    private boolean checkNet(){
+        if(builder.getNetWorkType() == NetWorkType.AUTO && NetworkUtils.getNetWorkType(builder.getContext()) != NetWorkType.NONE){
+            return true;
+        }else if(builder.getNetWorkType() == NetWorkType.NONE){
+            return false;
+        }else if(builder.getNetWorkType() == NetworkUtils.getNetWorkType(builder.getContext())){
+            return true;
+        }else
+            return false;
     }
 }
