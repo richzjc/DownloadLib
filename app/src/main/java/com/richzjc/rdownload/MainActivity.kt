@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import android.view.View
+import android.widget.Toast
 import com.richzjc.download.NetWorkType
 import com.richzjc.download.RDownloadClient
 import com.richzjc.downloadannotation.*
@@ -34,7 +35,7 @@ class MainActivity : AppCompatActivity() {
 
     @NetChange
     fun onNetChange(type : NetWorkType?){
-
+        Toast.makeText(this, "" + type, Toast.LENGTH_LONG).show()
     }
 
     @PauseStartEmpty

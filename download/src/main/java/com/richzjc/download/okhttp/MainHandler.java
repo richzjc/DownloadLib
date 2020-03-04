@@ -14,6 +14,7 @@ import com.richzjc.download.eventbus.WrapNotifyModel;
 import com.richzjc.download.notify.Observer;
 import com.richzjc.download.task.ParentTask;
 import java.lang.reflect.Method;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -81,7 +82,24 @@ public class MainHandler extends Handler {
     }
 
     private void handleNetChange(NetWorkType obj) {
-
+       Map<String, HashMap<Object, SimpleSubscribeInfo>> map = RDownloadClient.Companion.getSubscribeInfos();
+       if(map != null){
+           for(Map.Entry<String, HashMap<Object, SimpleSubscribeInfo>> entry : map.entrySet()){
+               for(Map.Entry<Object, SimpleSubscribeInfo> subEntry : entry.getValue().entrySet()){
+                   if(subEntry.getValue() != null && subEntry.getValue().getNetChangeMethod() !=  null){
+                       for(SubscribeMethod subscribeMethod : subEntry.getValue().getNetChangeMethod()){
+                           try {
+                               Method method = subEntry.getKey().getClass().getDeclaredMethod(subscribeMethod.getMethodName(), NetWorkType.class);
+                               method.setAccessible(true);
+                               method.invoke(subEntry.getKey(), obj);
+                           } catch (Exception e) {
+                               e.printStackTrace();
+                           }
+                       }
+                   }
+               }
+           }
+       }
     }
 
     private void handlePauseOrStart(RDownloadClient.Builder obj) {
