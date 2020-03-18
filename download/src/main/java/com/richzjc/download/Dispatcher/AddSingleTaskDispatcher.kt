@@ -1,6 +1,5 @@
 package com.richzjc.download.Dispatcher
 
-import com.richzjc.download.DOWNLOADING
 import com.richzjc.download.DOWNLOAD_DELETE
 import com.richzjc.download.RDownloadClient
 import com.richzjc.download.WAITING

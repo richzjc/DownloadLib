@@ -17,36 +17,42 @@ import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
 import static com.richzjc.download.okhttp.MainHandler.HANDLE_NEXT_MSG;
 
 public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
 
     @NotNull
     public RDownloadClient.Builder builder;
+    private int maxPoolSize;
+    private int executeSize;
 
     public CustomThreadPoolExecutor(int corePoolSize, int maximumPoolSize, long keepAliveTime, TimeUnit unit, BlockingQueue<Runnable> workQueue, ThreadFactory threadFactory, RejectedExecutionHandler handler) {
         super(corePoolSize, maximumPoolSize, keepAliveTime, unit, workQueue, threadFactory, handler);
+        this.maxPoolSize = maximumPoolSize;
     }
 
     @Override
     protected void beforeExecute(Thread t, Runnable r) {
         super.beforeExecute(t, r);
+        executeSize++;
         if (r instanceof ParentTask) {
-           synchronized (builder){
-               ((ParentTask) r).bindBuilder(builder);
-               if(((ParentTask) r).checkCanDownload()){
-                   Log.i("status", "beforExecute:" +  r);
-                   ((ParentTask) r).setStatus(ConstKt.DOWNLOADING);
-                   checkedCache();
-                   checkChildTaskIsEmpty((ParentTask) r);
-               }
-           }
+            synchronized (builder) {
+                ((ParentTask) r).bindBuilder(builder);
+                if (((ParentTask) r).checkCanDownload()) {
+                    Log.i("status", "beforExecute:" + r);
+                    ((ParentTask) r).setStatus(ConstKt.DOWNLOADING);
+                    checkedCache();
+                    checkChildTaskIsEmpty((ParentTask) r);
+                }
+            }
         }
     }
 
     @Override
     protected void afterExecute(Runnable it, Throwable t) {
         super.afterExecute(it, t);
+        executeSize--;
         Log.i("download", "afterExecute");
         synchronized (builder) {
             if (it instanceof ParentTask) {
@@ -83,9 +89,9 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     }
 
     private void checkChildTaskIsEmpty(ParentTask r) {
-        if (r.getRealChildTasks() != null && r.getRealChildTasks().size() > 0){
+        if (r.getRealChildTasks() != null && r.getRealChildTasks().size() > 0) {
             checkHasTotalLength(r);
-        }else if (r instanceof IRequestParamter) {
+        } else if (r instanceof IRequestParamter) {
             boolean isSuccess = RequestUtilKt.request(builder.getOkHttpClient(), (IRequestParamter) r);
             Log.i("download", "result : " + r.toString());
             if (isSuccess) {
@@ -94,7 +100,7 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
             } else {
                 r.setStatus(ConstKt.DOWNLOAD_ERROR);
             }
-        }else{
+        } else {
             checkHasTotalLength(r);
         }
     }
@@ -102,8 +108,14 @@ public class CustomThreadPoolExecutor extends ThreadPoolExecutor {
     private void checkHasTotalLength(ParentTask r) {
         if (r.checkCanDownload()) {
             boolean isSuccess = RequestUtilKt.requestLength(builder.getOkHttpClient(), r);
-            if(!isSuccess)
+            if (!isSuccess)
                 r.setStatus(ConstKt.DOWNLOAD_ERROR);
         }
+    }
+
+    @Override
+    public void execute(Runnable command) {
+        if (executeSize < maxPoolSize)
+            super.execute(command);
     }
 }
