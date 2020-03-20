@@ -2,6 +2,7 @@ package com.richzjc.download
 
 import com.richzjc.download.Dispatcher.*
 import com.richzjc.download.task.ParentTask
+import java.util.concurrent.Executors
 
 class RDownloadImpl(val client: RDownloadClient.Builder) : RDownload {
 
@@ -11,22 +12,34 @@ class RDownloadImpl(val client: RDownloadClient.Builder) : RDownload {
     private val pauseSingleDispatcher by lazy { PauseSingleTaskDispatcher(client) }
     private val deleteSingleDispatcher by lazy { DeleteSingleDispatcher(client) }
 
+    private val executorService by lazy {
+        Executors.newFixedThreadPool(1)
+    }
+
 
     override fun addTask(parentTask: ParentTask?) {
-        checkMaxCount()
-        startSingleDispatcher?.addTask(parentTask)
+        executorService.execute {
+            checkMaxCount()
+            startSingleDispatcher?.addTask(parentTask)
+        }
     }
 
     override fun pauseTask(parentTask: ParentTask?) {
-        pauseSingleDispatcher?.pauseSingleTask(parentTask)
+        executorService.execute {
+            pauseSingleDispatcher?.pauseSingleTask(parentTask)
+        }
     }
 
     override fun startAll() {
-        startAllDispater?.startAll()
+        executorService.execute {
+            startAllDispater?.startAll()
+        }
     }
 
     override fun pauseAll() {
-        pauseAllDispater?.pauseAll()
+        executorService.execute {
+            pauseAllDispater?.pauseAll()
+        }
     }
 
     override fun getAllDownloadData() = ArrayList<ParentTask>().apply {
@@ -41,7 +54,9 @@ class RDownloadImpl(val client: RDownloadClient.Builder) : RDownload {
     override fun getPauseOrErrorData(): List<ParentTask>? = client.pauseAndError
 
     override fun deleteTask(parentTask: ParentTask?) {
-        deleteSingleDispatcher?.deleteSingle(parentTask)
+        executorService.execute {
+            deleteSingleDispatcher?.deleteSingle(parentTask)
+        }
     }
 
     private fun checkMaxCount() {
