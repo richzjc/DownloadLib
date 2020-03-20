@@ -42,9 +42,8 @@ dependencies {
     testImplementation 'junit:junit:4.12'
     androidTestImplementation 'androidx.test.ext:junit:1.1.1'
     androidTestImplementation 'androidx.test.espresso:espresso-core:3.2.0'
-    kapt project(path: ':dCompiler')
-    implementation project(path: ':downloadAnnotation')
-    implementation project(path: ':download')
+    kapt 'com.richzjc:download_compiler:1.0.1'
+    api 'com.richzjc:download_lib:1.0.1'
     implementation project(path: ':db')
     implementation project(path: ':dbAnnotation')
 }
