@@ -7,8 +7,8 @@ import com.richzjc.downloadannotation.NetChange;
 import com.richzjc.downloadannotation.PauseAll;
 import com.richzjc.downloadannotation.PauseAndStart;
 import com.richzjc.downloadannotation.PauseStartEmpty;
-import com.richzjc.downloadannotation.StartAll;
 import com.richzjc.downloadannotation.SizeChange;
+import com.richzjc.downloadannotation.StartAll;
 import com.squareup.javapoet.ClassName;
 import com.squareup.javapoet.CodeBlock;
 import com.squareup.javapoet.FieldSpec;
@@ -38,7 +38,6 @@ import javax.lang.model.element.ExecutableElement;
 import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.util.Elements;
-import javax.lang.model.util.Types;
 import javax.tools.Diagnostic;
 
 @AutoService(Processor.class)
@@ -68,14 +67,10 @@ public class DownloadProcessor extends AbstractProcessor {
     }
 
     private void parsePackage(ProcessingEnvironment processingEnv) {
-        String name = processingEnv.getOptions().get("eventBusIndex");
-        messager.printMessage(Diagnostic.Kind.NOTE, "name =  " + name);
-        if (!EmptyUtils.isEmpty(name)) {
-            int index = name.lastIndexOf(".");
-            if (index > 0) {
-                packageName = name.substring(0, index);
-                className = name.substring(index + 1);
-            }
+        packageName = processingEnv.getOptions().get("moduleName");
+        messager.printMessage(Diagnostic.Kind.NOTE, "name =  " + packageName);
+        if (!EmptyUtils.isEmpty(packageName)) {
+                className = "RIndex";
         }
     }
 
