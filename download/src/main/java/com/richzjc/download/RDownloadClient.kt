@@ -97,6 +97,10 @@ class RDownloadClient private constructor(val builder: Builder) :
             private set
         var context: Context? = null
             private set
+        var fileSuffix: String? = null
+            private set
+        var cacheToDb: ICacheToDb? = null
+            private set
 
         val running = RLinkdList<ParentTask>(this)
         val pauseAndError = RLinkdList<ParentTask>(this)
@@ -116,9 +120,11 @@ class RDownloadClient private constructor(val builder: Builder) :
             this.threadCount = threadCount
         }
 
-        fun setDownloadFilePath(filePath: String?) {
-            this.filePath = filePath
-        }
+        fun setDownloadFilePath(filePath: String?) = apply { this.filePath = filePath }
+
+        fun setFileSuffix(suffix: String?) = apply { this.fileSuffix = suffix }
+
+        fun setCacheToDb(cacheToDb: ICacheToDb?) = apply { this.cacheToDb = cacheToDb }
 
         fun build(context: Context?): RDownloadClient {
             this.context = context?.applicationContext

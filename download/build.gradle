@@ -8,7 +8,7 @@ publish {
     userOrg = 'richzjc'
     groupId = 'com.richzjc'
     artifactId = 'download_lib'
-    publishVersion = '1.0.1'
+    publishVersion = '1.0.2'
     desc = '离线下载的核心库'
     website = 'https://github.com/novoda/bintray-release'
 }

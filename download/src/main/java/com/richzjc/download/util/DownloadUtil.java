@@ -32,10 +32,10 @@ public class DownloadUtil {
         }else{
            fileName =  String.valueOf(task.requestUrl.hashCode());
         }
-        return TextUtils.concat(filePath, "/", fileName, getSuffix(task.requestUrl)).toString();
+        return TextUtils.concat(filePath, "/", fileName, getSuffix(builder, task.requestUrl)).toString();
     }
 
-    private static String getSuffix(String downloadUrl) {
+    private static String getSuffix(RDownloadClient.Builder builder, String downloadUrl) {
         String url = downloadUrl;
         try {
             url = URLDecoder.decode(url, "UTF-8");
@@ -43,17 +43,25 @@ public class DownloadUtil {
             e.printStackTrace();
         }
 
-        String suffixes = "[\\w]+[\\.](avi|mpeg|3gp|mp3|mp4|wav|jpeg|gif|jpg|png|apk|exe|txt|html|zip|java|doc)";
+        String suffixes = "avi|mpeg|3gp|mp3|mp4|wav|jpeg|gif|jpg|png|apk|exe|txt|html|zip|java|doc";
         Pattern pat = Pattern.compile(suffixes);//正则判断
         Matcher mc = pat.matcher(url);//条件匹配
         String suffix = "";
         while (mc.find()) {
             suffix = mc.group();//截取文件名后缀名
         }
+
         if (!TextUtils.isEmpty(suffix)) {
-            return suffix.substring(suffix.lastIndexOf("."));
+            suffix =  suffix.substring(suffix.lastIndexOf("."));
         } else {
-            return ".temp";
+            suffix = ".temp";
+        }
+
+
+        if (TextUtils.isEmpty(builder.getFileSuffix())) {
+            return suffix;
+        } else {
+            return builder.getFileSuffix();
         }
     }
 
