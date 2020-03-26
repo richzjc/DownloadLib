@@ -19,8 +19,13 @@ class RDownloadImpl(val client: RDownloadClient.Builder) : RDownload {
 
     override fun addTask(parentTask: ParentTask?) {
         executorService.execute {
-            checkMaxCount()
             startSingleDispatcher?.addTask(parentTask)
+        }
+    }
+
+    override fun addTask(tasks: List<ParentTask>?) {
+        executorService.execute {
+            startSingleDispatcher?.addTasks(tasks)
         }
     }
 
@@ -56,16 +61,6 @@ class RDownloadImpl(val client: RDownloadClient.Builder) : RDownload {
     override fun deleteTask(parentTask: ParentTask?) {
         executorService.execute {
             deleteSingleDispatcher?.deleteSingle(parentTask)
-        }
-    }
-
-    private fun checkMaxCount() {
-        if (getAllDownloadSize() >= client.maxDownloadCount) {
-            if (client.pauseAndError.size > 0)
-                deleteTask(client.pauseAndError[0])
-            else if (client.running.size > 0) {
-                deleteTask(client.running[client.running.size - 1])
-            }
         }
     }
 }

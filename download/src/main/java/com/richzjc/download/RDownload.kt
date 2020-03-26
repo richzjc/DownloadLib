@@ -4,6 +4,9 @@ import com.richzjc.download.task.ParentTask
 
 interface RDownload {
     fun addTask(parentTask: ParentTask?)
+
+    fun addTask(tasks : List<ParentTask>?)
+
     fun pauseTask(parentTask: ParentTask?)
 
     fun startAll()
@@ -18,5 +21,5 @@ interface RDownload {
 
     fun getPauseOrErrorData() : List<ParentTask>?
 
-    fun deleteTask(ParentTask : ParentTask?);
+    fun deleteTask(ParentTask : ParentTask?)
 }
