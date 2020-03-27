@@ -68,10 +68,9 @@ public class DownloadProcessor extends AbstractProcessor {
 
     private void parsePackage(ProcessingEnvironment processingEnv) {
         packageName = processingEnv.getOptions().get("moduleName");
+        packageName = "com.richzjc." + packageName;
         messager.printMessage(Diagnostic.Kind.NOTE, "name =  " + packageName);
-        if (!EmptyUtils.isEmpty(packageName)) {
-                className = "RIndex";
-        }
+        className = "DownloadIndex";
     }
 
     @Override

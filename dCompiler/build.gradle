@@ -1,26 +1,26 @@
 apply plugin: 'java-library'
-//apply plugin: 'com.novoda.bintray-release' // must be applied after your artifact generating plugin (eg. java / com.android.library)
-//
-//publish {
-//    userOrg = 'richzjc'
-//    groupId = 'com.richzjc'
-//    artifactId = 'download_compiler'
-//    publishVersion = '1.0.2'
-//    desc = '离线下载的compiler'
-//    website = 'https://github.com/novoda/bintray-release'
-//}
-//
-//buildscript {
-//    repositories {
-//        mavenCentral()
-//        google()
-//        jcenter()
-//    }
-//
-//    dependencies {
-//        classpath 'com.novoda:bintray-release:0.9.1'
-//    }
-//}
+apply plugin: 'com.novoda.bintray-release' // must be applied after your artifact generating plugin (eg. java / com.android.library)
+
+publish {
+    userOrg = 'richzjc'
+    groupId = 'com.richzjc'
+    artifactId = 'download_compiler'
+    publishVersion = '1.0.3'
+    desc = '离线下载的compiler'
+    website = 'https://github.com/novoda/bintray-release'
+}
+
+buildscript {
+    repositories {
+        mavenCentral()
+        google()
+        jcenter()
+    }
+
+    dependencies {
+        classpath 'com.novoda:bintray-release:0.9.1'
+    }
+}
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
