@@ -91,8 +91,8 @@ public abstract class ParentTask implements IParentTask, Runnable {
 
     @Override
     public void run() {
-        if (childTasks != null) {
-            for (ChildTask childTask : childTasks) {
+        if (getRealChildTasks() != null) {
+            for (ChildTask childTask : getRealChildTasks()) {
                 if (checkCanDownload()) {
                     if (!childTask.run(builder, this))
                         break;
